@@ -6,4 +6,4 @@ node_js:
   - "8"
 before_install:
   - curl https://sh.rustup.rs -sSf -o script && chmod +x ./script && ./script -y && rm script
-  - npm install -g neon-cli
+  - rustc -V
