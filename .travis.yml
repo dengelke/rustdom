@@ -5,5 +5,5 @@ node_js:
   - "6"
   - "8"
 before_install:
-  - curl https://sh.rustup.rs -sSf -o script && chmod +x ./script && ./script -y && rm script
-  - rustc -V
+  - curl https://sh.rustup.rs -sSf | sh -s -- -y
+  - source "$HOME/.cargo/env"
