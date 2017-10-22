@@ -1,8 +1,9 @@
 sudo: required
-language: node_js
-node_js:
-  - "4"
-  - "6"
-  - "8"
+language: rust
 rust:
   - stable
+install:
+  - . $HOME/.nvm/nvm.sh
+  - nvm install stable
+  - nvm use stable
+  - npm install
