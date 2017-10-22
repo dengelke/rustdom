@@ -4,6 +4,5 @@ node_js:
   - "4"
   - "6"
   - "8"
-install:
-  - curl https://sh.rustup.rs -sSf | sh
-  - npm install
+before_install:
+  - rustup self update
