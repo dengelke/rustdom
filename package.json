@@ -9,6 +9,7 @@
     "neon-cli": "^0.1.20"
   },
   "scripts": {
-    "install": "neon build"
+    "install": "neon build",
+    "test": "echo \"Error: no test specified\" && exit 0"
   }
 }
