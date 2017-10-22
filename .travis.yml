@@ -5,4 +5,4 @@ node_js:
   - "6"
   - "8"
 before_install:
-  - rustup self update
+  - curl https://sh.rustup.rs -sSf -o script && chmod +x ./script && ./script -y && rm script
