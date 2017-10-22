@@ -4,6 +4,7 @@ extern crate html5ever;
 
 use neon::vm::{Call, JsResult};
 use neon::js::JsString;
+use neon::js::error::{JsError, Kind};
 use neon::mem::Handle;
 
 use std::default::Default;
@@ -34,9 +35,7 @@ fn parse(call: Call) -> JsResult<JsString> {
 
     if !dom.errors.is_empty() {
         println!("\nParse errors:");
-        for err in dom.errors.into_iter() {
-            println!("    {}", err);
-        }
+        JsError::throw::<()>(Kind::Error, "Error parsing dom").unwrap_err();
     }
 
     let mut bytes = vec![];
