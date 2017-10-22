@@ -1,9 +1,9 @@
 sudo: required
-language: rust
-rust:
-  - stable
+language: node_js
+node_js:
+  - "4"
+  - "6"
+  - "8"
 install:
-  - . $HOME/.nvm/nvm.sh
-  - nvm install stable
-  - nvm use stable
+  - curl https://sh.rustup.rs -sSf | sh
   - npm install
