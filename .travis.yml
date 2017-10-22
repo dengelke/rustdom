@@ -1,5 +1,6 @@
 sudo: required
 language: node_js
-include:
-- node_js: "6"
-  rust: "stable"
+node_js:
+  - "4"
+  - "6"
+  - "8"
