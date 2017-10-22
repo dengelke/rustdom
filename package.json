@@ -1,0 +1,14 @@
+{
+  "name": "rustdom",
+  "version": "0.1.0",
+  "description": "",
+  "main": "lib/index.js",
+  "author": "Daniel Engelke <dengelke91@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "neon-cli": "^0.1.20"
+  },
+  "scripts": {
+    "install": "neon build"
+  }
+}
