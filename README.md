@@ -1,6 +1,7 @@
 # rustdom
 
-Rust based DOM manipulation library for Node.js
+A high performance DOM manipulation library for Node.js built using Rust.
+
 ## Installing rustdom
 
 Installing rustdom requires a [supported version of Node and Rust](https://github.com/neon-bindings/neon#platform-support).
@@ -13,6 +14,19 @@ $ npm install
 
 This fully installs the project, including installing any dependencies and running the build.
 
+## Quickstart
+
+```js
+
+const RustDOM = require('rustdom');
+
+const dom = new RustDOM("<!DOCTYPE html><html><head><\head><body><p>Foo</p><p class='Bar'>Baz</p></body></html>");
+console.log(dom.document.body.firstChild.textContent);
+console.log(dom.document.querySelector('.Bar').nodeType);
+console.log(dom.serialize());
+
+```
+
 ## Building rustdom
 
 If you have already installed the project and only want to run the build, run:
@@ -23,9 +37,13 @@ $ npm run build
 
 This command uses the [cargo-cp-artifact](https://github.com/neon-bindings/cargo-cp-artifact) utility to run the Rust build and copy the built library into `./index.node`.
 
-## Exploring rustdom
+## Developing rustdom
 
-After building rustdom, you can explore its exports at the Node REPL:
+To run build on changes run
+
+```sh
+$ npm run watch
+```
 
 ## Available Scripts
 
@@ -57,28 +75,9 @@ Same as [`npm build`](#npm-build) but, builds the module with the [`release`](ht
 
 Runs the unit tests by calling `npx mocha test`
 
-## Project Layout
-
-The directory structure of this project is:
-
-```
-rustdom/
-├── Cargo.toml
-├── README.md
-├── index.node
-├── package.json
-├── src/
-|   └── lib.rs
-└── target/
-```
-
 ### Cargo.toml
 
 The Cargo [manifest file](https://doc.rust-lang.org/cargo/reference/manifest.html), which informs the `cargo` command.
-
-### README.md
-
-This file.
 
 ### index.node
 
@@ -93,10 +92,6 @@ The npm [manifest file](https://docs.npmjs.com/cli/v7/configuring-npm/package-js
 ### src/
 
 The directory tree containing the Rust source code for the project.
-
-### src/lib.rs
-
-The Rust library's main module.
 
 ### target/
 

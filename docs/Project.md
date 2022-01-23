@@ -13,10 +13,11 @@
 - [x] Add Github Actions CI
 - [x] Return additional dom properties
 - [x] Git commit changes
+- [x] Publish package
+- [x] Update README
 - [ ] Return nodeName correctly for all types
 - [ ] Return JsObject instead of JsBox or Error
 - [ ] Support window in node.js
-- [ ] Publish package
 - [ ] Update DOM properties
 - [ ] Add additional nodes to dom tree
 - [ ] Support NodeList
@@ -24,7 +25,7 @@
 - [ ] Return DOM parsing errors
 - [ ] Support iteration over lists
 - [ ] Update to Typescript
-- [ ] Provide detailed README
+- [ ] Provide detailed API docs
 - [ ] Implement rwlock or other thread safety mechanism
 - [ ] Performance benchmarking
 - [ ] Write blog article

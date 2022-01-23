@@ -94,14 +94,6 @@ class Document extends Node {
         return this.querySelector('head');;
     }
 
-    // createTextNode (text) {
-    //     try {
-    //         return new Node(createTextNode(this.#_data, text));
-    //     } catch (err) {
-    //         return null;
-    //     }
-    // }
-
 }
 
 module.exports = class RustDOM {
