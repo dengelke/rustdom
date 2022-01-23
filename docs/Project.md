@@ -12,10 +12,10 @@
 - [x] Cleanup rust struct and make own file
 - [x] Add Github Actions CI
 - [x] Return additional dom properties
+- [x] Git commit changes
 - [ ] Return nodeName correctly for all types
 - [ ] Return JsObject instead of JsBox or Error
 - [ ] Support window in node.js
-- [ ] Git commit changes
 - [ ] Publish package
 - [ ] Update DOM properties
 - [ ] Add additional nodes to dom tree
