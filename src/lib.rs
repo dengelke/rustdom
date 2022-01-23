@@ -33,58 +33,58 @@ fn serialize(mut cx: FunctionContext) -> JsResult<JsString> {
     Ok(cx.string(content))
 }
 
-fn query_selector(mut cx: FunctionContext) -> JsResult<BoxedNode> {
+fn query_selector(mut cx: FunctionContext) -> JsResult<JsValue> {
     let dom = cx.argument::<BoxedNode>(0)?;
     let selector = cx.argument::<JsString>(1)?;
     let result = dom.borrow().query_selector(selector.value(&mut cx));
     match result {
-        Ok(node) => Ok(cx.boxed(RefCell::new(node))),
-        Err(_err) => cx.throw_error("Node not found")
+        Ok(node) => Ok(cx.boxed(RefCell::new(node)).upcast()),
+        Err(_err) => Ok(cx.null().upcast())
     }
 }
 
-fn first_child(mut cx: FunctionContext) -> JsResult<BoxedNode> {
+fn first_child(mut cx: FunctionContext) -> JsResult<JsValue> {
     let dom = cx.argument::<BoxedNode>(0)?;
     let result = dom.borrow().first_child();
     match result {
-        Ok(node) => Ok(cx.boxed(RefCell::new(node))),
-        Err(_err) => cx.throw_error("Node not found")
+        Ok(node) => Ok(cx.boxed(RefCell::new(node)).upcast()),
+        Err(_err) => Ok(cx.null().upcast())
     }
 }
 
-fn last_child(mut cx: FunctionContext) -> JsResult<BoxedNode> {
+fn last_child(mut cx: FunctionContext) -> JsResult<JsValue> {
     let dom = cx.argument::<BoxedNode>(0)?;
     let result = dom.borrow().last_child();
     match result {
-        Ok(node) => Ok(cx.boxed(RefCell::new(node))),
-        Err(_err) => cx.throw_error("Node not found")
+        Ok(node) => Ok(cx.boxed(RefCell::new(node)).upcast()),
+        Err(_err) => Ok(cx.null().upcast())
     }
 }
 
-fn previous_sibling(mut cx: FunctionContext) -> JsResult<BoxedNode> {
+fn previous_sibling(mut cx: FunctionContext) -> JsResult<JsValue> {
     let dom = cx.argument::<BoxedNode>(0)?;
     let result = dom.borrow().previous_sibling();
     match result {
-        Ok(node) => Ok(cx.boxed(RefCell::new(node))),
-        Err(_err) => cx.throw_error("Node not found")
+        Ok(node) => Ok(cx.boxed(RefCell::new(node)).upcast()),
+        Err(_err) => Ok(cx.null().upcast())
     }
 }
 
-fn next_sibling(mut cx: FunctionContext) -> JsResult<BoxedNode> {
+fn next_sibling(mut cx: FunctionContext) -> JsResult<JsValue> {
     let dom = cx.argument::<BoxedNode>(0)?;
     let result = dom.borrow().next_sibling();
     match result {
-        Ok(node) => Ok(cx.boxed(RefCell::new(node))),
-        Err(_err) => cx.throw_error("Node not found")
+        Ok(node) => Ok(cx.boxed(RefCell::new(node)).upcast()),
+        Err(_err) => Ok(cx.null().upcast())
     }
 }
 
-fn parent_node(mut cx: FunctionContext) -> JsResult<BoxedNode> {
+fn parent_node(mut cx: FunctionContext) -> JsResult<JsValue> {
     let dom = cx.argument::<BoxedNode>(0)?;
     let result = dom.borrow().parent_node();
     match result {
-        Ok(node) => Ok(cx.boxed(RefCell::new(node))),
-        Err(_err) => cx.throw_error("Node not found")
+        Ok(node) => Ok(cx.boxed(RefCell::new(node)).upcast()),
+        Err(_err) => Ok(cx.null().upcast())
     }
 }
 

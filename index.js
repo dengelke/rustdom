@@ -16,67 +16,41 @@ class Node {
     }
 
     get firstChild () {
-        try {
-            return new Node(firstChild(this.#_data));
-        } catch (err) {
-            return null;
-        }
+        const data = firstChild(this.#_data);
+        return data ? new Node(data) : null;
     }
 
     get lastChild () {
-        try {
-            return new Node(lastChild(this.#_data));
-        } catch (err) {
-            return null;
-        }
+        const data = lastChild(this.#_data);
+        return data ? new Node(data) : null;
     }
 
     get parentNode () {
-        try {
-            return new Node(parentNode(this.#_data));
-        } catch (err) {
-            return null;
-        }
+        const data = parentNode(this.#_data);
+        return data ? new Node(data) : null;
     }
 
     get previousSibling () {
-        try {
-            return new Node(previousSibling(this.#_data));
-        } catch (err) {
-            return null;
-        }
+        const data = previousSibling(this.#_data);
+        return data ? new Node(data) : null;
     }
 
     get nextSibling () {
-        try {
-            return new Node(nextSibling(this.#_data));
-        } catch (err) {
-            return null;
-        }
+        const data = nextSibling(this.#_data);
+        return data ? new Node(data) : null;
     }
 
     get nodeName () {
-        try {
-            return nodeName(this.#_data);
-        } catch (err) {
-            return null;
-        }
+        return nodeName(this.#_data);
     }
 
     get nodeType () {
-        try {
-            return nodeType(this.#_data);
-        } catch (err) {
-            return null;
-        }
+        return nodeType(this.#_data);
     }
 
     querySelector (selector) {
-        try {
-            return new Node(querySelector(this.#_data, selector));
-        } catch (err) {
-            return null;
-        }
+        const data = querySelector(this.#_data, selector);
+        return data ? new Node(data) : null;
     }
 
     serialize () {

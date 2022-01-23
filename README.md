@@ -75,6 +75,8 @@ Same as [`npm build`](#npm-build) but, builds the module with the [`release`](ht
 
 Runs the unit tests by calling `npx mocha test`
 
+## Files
+
 ### Cargo.toml
 
 The Cargo [manifest file](https://doc.rust-lang.org/cargo/reference/manifest.html), which informs the `cargo` command.

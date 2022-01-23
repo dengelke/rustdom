@@ -15,8 +15,8 @@
 - [x] Git commit changes
 - [x] Publish package
 - [x] Update README
+- [x] Return JsValue instead of JsBox or Error
 - [ ] Return nodeName correctly for all types
-- [ ] Return JsObject instead of JsBox or Error
 - [ ] Support window in node.js
 - [ ] Update DOM properties
 - [ ] Add additional nodes to dom tree
