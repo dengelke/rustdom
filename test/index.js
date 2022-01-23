@@ -1,6 +1,8 @@
 const { expect } = require('chai');
 const RustDOM = require('../');
 
+const basicHtmlString = `<!DOCTYPE html><html><head></head><body><p class="A">Foo</p><p id="Baz">Bar</p></body></html>`;
+
 describe('serialize tests', () => {
   it('should insert head and body tags', () => {
     const document = new RustDOM("<!DOCTYPE html>Test");
@@ -13,10 +15,9 @@ describe('serialize tests', () => {
 });
 
 describe('basic tests', () => {
-  const htmlString = `<!DOCTYPE html><html><head></head><body><p class="A">Foo</p><p id="Baz">Bar</p></body></html>`
-  const basicDocument = new RustDOM(htmlString).document;
+  const basicDocument = new RustDOM(basicHtmlString).document;
   it('should parse valid dom and not remove DOCTYPE', () => {
-    expect(basicDocument.serialize()).to.equal(htmlString);
+    expect(basicDocument.serialize()).to.equal(basicHtmlString);
   });
   it('should return body', () => {
     const body = basicDocument.body;
@@ -64,9 +65,29 @@ describe('basic tests', () => {
   });
 });
 
+describe('list tests', () => {
+  const basicDocument = new RustDOM(basicHtmlString).document;
+  it('should return children', () => {
+    expect(basicDocument.children[0].nodeName).to.equal('html');
+    expect(basicDocument.children[1].nodeName).to.equal('HTML');
+    expect(basicDocument.children[1].children[0].nodeName).to.equal('HEAD');
+    expect(basicDocument.children[1].children[1].nodeName).to.equal('BODY');
+  });
+  it('should return empty on children', () => {
+    expect(basicDocument.querySelector('p').lastChild.children).to.deep.equal([]);
+  });
+  it('should queryAll', () => {
+    const nodeList = basicDocument.body.querySelectorAll('p');
+    expect(nodeList.length).to.equal(2);
+    expect(nodeList[0].nodeName).to.equal('P');
+  });
+  it('should return empty on querySelectorAll', () => {
+    expect(basicDocument.querySelectorAll('.B')).to.deep.equal([]);
+  });
+});
+
 describe('null tests', () => {
-  const htmlString = `<!DOCTYPE html><html><head></head><body><p class="A">Foo</p><p id="Baz">Bar</p></body></html>`
-  const basicDocument = new RustDOM(htmlString).document;
+  const basicDocument = new RustDOM(basicHtmlString).document;
   it('should return null on querySelector', () => {
     expect(basicDocument.querySelector('.B')).to.equal(null);
   });

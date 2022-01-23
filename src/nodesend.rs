@@ -1,6 +1,7 @@
 use html5ever::serialize::{SerializeOpts};
 use html5ever::tree_builder::TreeBuilderOpts;
 
+use kuchiki::iter::{Descendants, Elements, Select, Siblings};
 use kuchiki::traits::*;
 use kuchiki::{NodeRef, ParseOpts};
 use kuchiki::{NodeData};
@@ -31,6 +32,10 @@ impl NodeSend {
         NodeSend { node }
     }
 
+    pub fn new_node(node: NodeRef) -> Self {
+        NodeSend { node }
+    }
+
     pub fn serialize(&self) -> String {
         // Serialise result
         let mut bytes = vec![];
@@ -38,10 +43,19 @@ impl NodeSend {
         String::from_utf8(bytes).unwrap()
     }
 
+    pub fn children(&self) -> Siblings {
+        self.node.children()
+    }
+
     pub fn query_selector(&self, selector: String) -> Result<NodeSend, ()> {
         let selector_match = self.node.select_first(&selector)?;
         let node = selector_match.as_node().to_owned();
         Ok(NodeSend { node })
+    }
+
+    pub fn query_selector_all(&self, selector: String) -> Result<Select<Elements<Descendants>>, ()> {
+        let result = self.node.select(&selector)?;
+        Ok(result)
     }
 
     pub fn first_child(&self) -> Result<NodeSend, ()> {

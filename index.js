@@ -1,4 +1,4 @@
-const { parse, querySelector, serialize, firstChild, lastChild, nextSibling, previousSibling, parentNode, textContent, nodeName, nodeType } = require('./index.node');
+const { parse, querySelector, querySelectorAll, serialize, firstChild, lastChild, nextSibling, previousSibling, parentNode, textContent, nodeName, nodeType, children } = require('./index.node');
 
 class Node {
     #_data;
@@ -48,9 +48,17 @@ class Node {
         return nodeType(this.#_data);
     }
 
+    get children () {
+        return children(this.#_data).map(data => new Node(data));
+    }
+
     querySelector (selector) {
         const data = querySelector(this.#_data, selector);
         return data ? new Node(data) : null;
+    }
+
+    querySelectorAll (selector) {
+        return querySelectorAll(this.#_data, selector).map(data => new Node(data));
     }
 
     serialize () {

@@ -43,6 +43,23 @@ fn query_selector(mut cx: FunctionContext) -> JsResult<JsValue> {
     }
 }
 
+fn query_selector_all(mut cx: FunctionContext) -> JsResult<JsArray> {
+    let dom = cx.argument::<BoxedNode>(0)?;
+    let selector = cx.argument::<JsString>(1)?;
+    let result = dom.borrow().query_selector_all(selector.value(&mut cx));
+    let result_array = JsArray::new(&mut cx, 0);
+    for selector in result {
+        for node in selector {
+            let len = result_array.len(&mut cx);
+            // TODO remove as_node and to_owned component
+            let boxed = cx.boxed(RefCell::new(NodeSend::new_node(node.as_node().to_owned())));
+            result_array.set(&mut cx, len, boxed)?;
+        }
+    }
+    Ok(result_array)
+}
+
+
 fn first_child(mut cx: FunctionContext) -> JsResult<JsValue> {
     let dom = cx.argument::<BoxedNode>(0)?;
     let result = dom.borrow().first_child();
@@ -106,11 +123,24 @@ fn node_type(mut cx: FunctionContext) -> JsResult<JsNumber> {
     Ok(cx.number(result.0))
 }
 
+fn children(mut cx: FunctionContext) -> JsResult<JsArray> {
+    let dom = cx.argument::<BoxedNode>(0)?;
+    let result = dom.borrow().children();
+    let result_array = JsArray::new(&mut cx, 0);
+    for node in result {
+        let len = result_array.len(&mut cx);
+        let boxed = cx.boxed(RefCell::new(NodeSend::new_node(node)));
+        result_array.set(&mut cx, len, boxed)?;
+    }
+    Ok(result_array)
+}
+
 #[neon::main]
 fn main(mut cx: ModuleContext) -> NeonResult<()> {
     cx.export_function("parse", parse)?;
     cx.export_function("serialize", serialize)?;
     cx.export_function("querySelector", query_selector)?;
+    cx.export_function("querySelectorAll", query_selector_all)?;
     cx.export_function("firstChild", first_child)?;
     cx.export_function("lastChild", last_child)?;
     cx.export_function("previousSibling", previous_sibling)?;
@@ -119,5 +149,6 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
     cx.export_function("textContent", text_content)?;
     cx.export_function("nodeName", node_name)?;
     cx.export_function("nodeType", node_type)?;
+    cx.export_function("children", children)?;
     Ok(())
 }

@@ -16,6 +16,7 @@
 - [x] Publish package
 - [x] Update README
 - [x] Return JsValue instead of JsBox or Error
+- [x] Support children and querySelectorAll
 - [ ] Return nodeName correctly for all types
 - [ ] Support window in node.js
 - [ ] Update DOM properties
