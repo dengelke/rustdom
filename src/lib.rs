@@ -132,14 +132,14 @@ fn text_content(mut cx: FunctionContext) -> JsResult<JsString> {
 
 fn node_name(mut cx: FunctionContext) -> JsResult<JsString> {
     let dom = cx.argument::<BoxedNode>(0)?;
-    let result = dom.borrow().node_info();
-    Ok(cx.string(result.1))
+    let result = dom.borrow().node_name();
+    Ok(cx.string(result))
 }
 
 fn node_type(mut cx: FunctionContext) -> JsResult<JsNumber> {
     let dom = cx.argument::<BoxedNode>(0)?;
-    let result = dom.borrow().node_info();
-    Ok(cx.number(result.0))
+    let result = dom.borrow().node_type();
+    Ok(cx.number(result))
 }
 
 fn child_nodes(mut cx: FunctionContext) -> JsResult<JsArray> {

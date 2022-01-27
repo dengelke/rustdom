@@ -122,33 +122,31 @@ impl NodeSend {
     }
 
     // See https://dom.spec.whatwg.org/#interface-node for documentation
-    // TODO split into two functions
-    pub fn node_info(&self) -> (i8, String) {
+    pub fn node_type(&self) -> i8 {
         let data = self.node.data();
         match data {
-            NodeData::Element(data) => {
-                (1, data.name.local.to_string().to_uppercase())
-            },
-            NodeData::Text(_data) => {
-                (3, "#text".to_string())
-            },
-            NodeData::ProcessingInstruction(data) => {
+            NodeData::Element(..) => 1,
+            NodeData::Text(..) => 3,
+            NodeData::ProcessingInstruction(..) => 7,
+            NodeData::Comment(..) => 8,
+            NodeData::Document(..) => 9,
+            NodeData::Doctype(..) => 10,
+            NodeData::DocumentFragment => 11,
+        }
+    }
+
+    pub fn node_name(&self) -> String {
+        let data = self.node.data();
+        match data {
+            NodeData::Element(data) => data.name.local.to_string().to_uppercase(),
+            NodeData::Text(..) => "#text".to_string(),
+            NodeData::ProcessingInstruction(data) => 
                 // TODO test extraction of target
-                (7, data.borrow().0.to_string())
-            },
-            NodeData::Comment(_data) => {
-                (8, "#comment".to_string())
-            },
-            NodeData::Document(_data) => {
-                (9, "#document".to_string())
-            },
-            NodeData::Doctype(data) => {
-                (10, data.name.to_string())
-            },
-            NodeData::DocumentFragment => {
-                // TODO test
-                (11, "#document-fragment".to_string())
-            },
+                data.borrow().0.to_string(),
+            NodeData::Comment(..) => "#comment".to_string(),
+            NodeData::Document(..) => "#document".to_string(),
+            NodeData::Doctype(data) => data.name.to_string(),
+            NodeData::DocumentFragment => "#document-fragment".to_string(),
         }
     }
 }
