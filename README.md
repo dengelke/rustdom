@@ -9,7 +9,7 @@ Installing rustdom requires a [supported version of Node and Rust](https://githu
 You can install the project with npm. In the project directory, run:
 
 ```sh
-$ npm install
+$ npm install --save rustdom
 ```
 
 This fully installs the project, including installing any dependencies and running the build.

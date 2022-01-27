@@ -27,9 +27,15 @@ fn parse(mut cx: FunctionContext) -> JsResult<BoxedNode> {
     Ok(cx.boxed(dom))
 }
 
-fn serialize(mut cx: FunctionContext) -> JsResult<JsString> {
+fn inner_html(mut cx: FunctionContext) -> JsResult<JsString> {
     let dom = cx.argument::<BoxedNode>(0)?;
-    let content = dom.borrow().serialize();
+    let content = dom.borrow().inner_html();
+    Ok(cx.string(content))
+}
+
+fn outer_html(mut cx: FunctionContext) -> JsResult<JsString> {
+    let dom = cx.argument::<BoxedNode>(0)?;
+    let content = dom.borrow().outer_html();
     Ok(cx.string(content))
 }
 
@@ -57,6 +63,19 @@ fn query_selector_all(mut cx: FunctionContext) -> JsResult<JsArray> {
         }
     }
     Ok(result_array)
+}
+
+fn create_text_node(mut cx: FunctionContext) -> JsResult<BoxedNode> {
+    let text = cx.argument::<JsString>(0)?;
+    let node = RefCell::new(NodeSend::create_text_node(text.value(&mut cx)));
+    Ok(cx.boxed(node))
+}
+
+fn append_child(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+    let parent = cx.argument::<BoxedNode>(0)?;
+    let child = cx.argument::<BoxedNode>(1)?;
+    parent.borrow_mut().append_child(&child.borrow());
+    Ok(cx.undefined())
 }
 
 
@@ -123,9 +142,9 @@ fn node_type(mut cx: FunctionContext) -> JsResult<JsNumber> {
     Ok(cx.number(result.0))
 }
 
-fn children(mut cx: FunctionContext) -> JsResult<JsArray> {
+fn child_nodes(mut cx: FunctionContext) -> JsResult<JsArray> {
     let dom = cx.argument::<BoxedNode>(0)?;
-    let result = dom.borrow().children();
+    let result = dom.borrow().child_nodes();
     let result_array = JsArray::new(&mut cx, 0);
     for node in result {
         let len = result_array.len(&mut cx);
@@ -135,10 +154,25 @@ fn children(mut cx: FunctionContext) -> JsResult<JsArray> {
     Ok(result_array)
 }
 
+fn children(mut cx: FunctionContext) -> JsResult<JsArray> {
+    let dom = cx.argument::<BoxedNode>(0)?;
+    let result = dom.borrow().children();
+    let result_array = JsArray::new(&mut cx, 0);
+    for node in result {
+        let len = result_array.len(&mut cx);
+        let boxed = cx.boxed(RefCell::new(NodeSend::new_node(node.as_node().to_owned())));
+        result_array.set(&mut cx, len, boxed)?;
+    }
+    Ok(result_array)
+}
+
 #[neon::main]
 fn main(mut cx: ModuleContext) -> NeonResult<()> {
     cx.export_function("parse", parse)?;
-    cx.export_function("serialize", serialize)?;
+    cx.export_function("createTextNode", create_text_node)?;
+    cx.export_function("appendChild", append_child)?;
+    cx.export_function("innerHTML", inner_html)?;
+    cx.export_function("outerHTML", outer_html)?;
     cx.export_function("querySelector", query_selector)?;
     cx.export_function("querySelectorAll", query_selector_all)?;
     cx.export_function("firstChild", first_child)?;
@@ -150,5 +184,6 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
     cx.export_function("nodeName", node_name)?;
     cx.export_function("nodeType", node_type)?;
     cx.export_function("children", children)?;
+    cx.export_function("childNodes", child_nodes)?;
     Ok(())
 }

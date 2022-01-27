@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const RustDOM = require('../');
 
-const basicHtmlString = `<!DOCTYPE html><html><head></head><body><p class="A">Foo</p><p id="Baz">Bar</p></body></html>`;
+const basicHtmlString = `<!DOCTYPE html><html><head></head><body><p class="A">Foo</p><p id="Baz">Bar</p><!--' and '--></body></html>`;
 
 describe('serialize tests', () => {
   it('should insert head and body tags', () => {
@@ -14,96 +14,113 @@ describe('serialize tests', () => {
   });
 });
 
-describe('basic tests', () => {
+describe('basic', () => {
   const basicDocument = new RustDOM(basicHtmlString).document;
-  it('should parse valid dom and not remove DOCTYPE', () => {
-    expect(basicDocument.serialize()).to.equal(basicHtmlString);
+  it('parse valid dom and not remove DOCTYPE', () => {
+    expect(basicDocument.outerHTML).to.equal(basicHtmlString);
   });
-  it('should return body', () => {
+  it('return body', () => {
     const body = basicDocument.body;
     expect(body.textContent).to.equal('FooBar');
     expect(body.nodeName).to.equal('BODY');
     expect(body.nodeType).to.equal(1);
+    expect(body.innerHTML).to.equal(`<p class="A">Foo</p><p id="Baz">Bar</p><!--' and '-->`);
+    expect(body.outerHTML).to.equal(`<body><p class="A">Foo</p><p id="Baz">Bar</p><!--' and '--></body>`);
   });
-  it('should return head', () => {
+  it('return head', () => {
     const head = basicDocument.head;
     expect(head.textContent).to.equal('');
     expect(head.nodeName).to.equal('HEAD');
-    expect(head.nodeType).to.equal(1);
+    expect(head.innerHTML).to.equal('');
+    expect(head.outerHTML).to.equal('<head></head>');
+
   });
-  it('should return doctype', () => {
+  it('return doctype', () => {
     const docType = basicDocument.firstChild;
     expect(docType.nodeType).to.equal(10);
     expect(docType.nodeName).to.equal('html');
+    expect(docType.innerHTML).to.equal('');
+    expect(docType.outerHTML).to.equal('<!DOCTYPE html>');
   });
-  it('should return firstChild textContent', () => {
+  it('return firstChild textContent', () => {
     expect(basicDocument.querySelector('body').firstChild.textContent).to.equal('Foo');
   });
-  it('should return lastChild textContent', () => {
-    expect(basicDocument.querySelector('body').lastChild.textContent).to.equal('Bar');
+  it('return lastChild textContent', () => {
+    expect(basicDocument.querySelector('body').lastChild.textContent).to.equal('');
   });
-  it('should return lastChild previousSibling textContent', () => {
-    expect(basicDocument.querySelector('body').lastChild.previousSibling.textContent).to.equal('Foo');
+  it('return lastChild previousSibling textContent', () => {
+    expect(basicDocument.querySelector('body').lastChild.previousSibling.textContent).to.equal('Bar');
   });
-  it('should return lastChild previousSibling textContent', () => {
+  it('return lastChild previousSibling textContent', () => {
     expect(basicDocument.querySelector('body').firstChild.nextSibling.textContent).to.equal('Bar');
   });
-  it('should return parents textContent', () => {
+  it('return parents textContent', () => {
     expect(basicDocument.querySelector('p').parentNode.textContent).to.equal('FooBar');
   });
-  it('should query id', () => {
+  it('query id', () => {
     expect(basicDocument.querySelector('#Baz').textContent).to.equal('Bar');
+    expect(basicDocument.querySelector('#Baz').innerHTML).to.equal('Bar');
   });
-  it('should query class', () => {
+  it('query class', () => {
     expect(basicDocument.querySelector('.A').textContent).to.equal('Foo');
   });
-  it('should query nodeName', () => {
+  it('query nodeName', () => {
     expect(basicDocument.querySelector('p').nodeName).to.equal('P');
   });
-  it('should query nodeType', () => {
+  it('query nodeType', () => {
     expect(basicDocument.nodeType).to.equal(9);
   });
 });
 
-describe('list tests', () => {
+describe('list', () => {
   const basicDocument = new RustDOM(basicHtmlString).document;
-  it('should return children', () => {
-    expect(basicDocument.children[0].nodeName).to.equal('html');
-    expect(basicDocument.children[1].nodeName).to.equal('HTML');
-    expect(basicDocument.children[1].children[0].nodeName).to.equal('HEAD');
-    expect(basicDocument.children[1].children[1].nodeName).to.equal('BODY');
+  it('return children and childNodes', () => {
+    expect(basicDocument.children[0].nodeName).to.equal('HTML');
+    expect(basicDocument.childNodes[0].nodeName).to.equal('html');
+    expect(basicDocument.body.childNodes[2].nodeName).to.equal('#comment');
   });
-  it('should return empty on children', () => {
+  it('return empty on children', () => {
     expect(basicDocument.querySelector('p').lastChild.children).to.deep.equal([]);
   });
-  it('should queryAll', () => {
+  it('queryAll', () => {
     const nodeList = basicDocument.body.querySelectorAll('p');
     expect(nodeList.length).to.equal(2);
     expect(nodeList[0].nodeName).to.equal('P');
   });
-  it('should return empty on querySelectorAll', () => {
+  it('return empty on querySelectorAll', () => {
     expect(basicDocument.querySelectorAll('.B')).to.deep.equal([]);
   });
 });
 
-describe('null tests', () => {
+describe('null', () => {
   const basicDocument = new RustDOM(basicHtmlString).document;
-  it('should return null on querySelector', () => {
+  it('return null on querySelector', () => {
     expect(basicDocument.querySelector('.B')).to.equal(null);
   });
-  it('should return null on firstChild', () => {
+  it('return null on firstChild', () => {
     expect(basicDocument.querySelector('p').firstChild.firstChild).to.equal(null);
   });
-  it('should return null on lastChild', () => {
+  it('return null on lastChild', () => {
     expect(basicDocument.querySelector('p').lastChild.lastChild).to.equal(null);
   });
-  it('should return null on nextSibling', () => {
+  it('return null on nextSibling', () => {
     expect(basicDocument.querySelector('p').lastChild.nextSibling).to.equal(null);
   });
-  it('should return null on previousSibling', () => {
+  it('return null on previousSibling', () => {
     expect(basicDocument.querySelector('p').lastChild.previousSibling).to.equal(null);
   });
-  it('should return null on document parentNode', () => {
+  it('return null on document parentNode', () => {
     expect(basicDocument.parentNode).to.equal(null);
+  });
+});
+
+describe('create node', () => {
+  const basicDocument = new RustDOM(basicHtmlString).document;
+  it('should return null on querySelector', () => {
+    expect(basicDocument.createTextNode('new text').textContent).to.equal('new text');
+  });
+  it('should append text', () => {
+    const textNode = basicDocument.createTextNode('new text node')
+    expect(basicDocument.appendChild(textNode).lastChild.textContent).to.equal('new text node');
   });
 });

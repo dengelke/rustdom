@@ -17,15 +17,16 @@
 - [x] Update README
 - [x] Return JsValue instead of JsBox or Error
 - [x] Support children and querySelectorAll
-- [ ] Return nodeName correctly for all types
+- [x] Support NodeList
+- [ ] Return nodeName correctly for all types (to be tested)
 - [ ] Support window in node.js
 - [ ] Update DOM properties
-- [ ] Add additional nodes to dom tree
-- [ ] Support NodeList
+- [ ] Add additional nodes to dom tree (POC done)
 - [ ] Handle document.body.parent.body correctly
 - [ ] Return DOM parsing errors
 - [ ] Support iteration over lists
 - [ ] Update to Typescript
+- [ ] Implement ts-mixin
 - [ ] Provide detailed API docs
 - [ ] Implement rwlock or other thread safety mechanism
 - [ ] Performance benchmarking

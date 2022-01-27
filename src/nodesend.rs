@@ -1,10 +1,10 @@
 use html5ever::serialize::{SerializeOpts};
+use html5ever::serialize::TraversalScope::*;
 use html5ever::tree_builder::TreeBuilderOpts;
 
 use kuchiki::iter::{Descendants, Elements, Select, Siblings};
 use kuchiki::traits::*;
-use kuchiki::{NodeRef, ParseOpts};
-use kuchiki::{NodeData};
+use kuchiki::{NodeData, NodeRef, ParseOpts};
 
 pub struct NodeSend {
     node: NodeRef,
@@ -36,14 +36,37 @@ impl NodeSend {
         NodeSend { node }
     }
 
-    pub fn serialize(&self) -> String {
+    pub fn create_text_node(content: String) -> Self {
+        let node = NodeRef::new_text(content);
+        NodeSend { node }
+    }
+
+    pub fn append_child(&mut self, new_child: &NodeSend) -> () {
+        self.node.append(new_child.node.clone())
+    }
+
+    pub fn inner_html(&self) -> String {
         // Serialise result
         let mut bytes = vec![];
         html5ever::serialize::serialize(&mut bytes, &self.node, SerializeOpts::default()).unwrap();
         String::from_utf8(bytes).unwrap()
     }
 
-    pub fn children(&self) -> Siblings {
+    pub fn outer_html(&self) -> String {
+        // Serialise result
+        let mut bytes = vec![];
+        html5ever::serialize::serialize(&mut bytes, &self.node, SerializeOpts {
+            traversal_scope: IncludeNode,
+            ..Default::default()
+        }).unwrap();
+        String::from_utf8(bytes).unwrap()
+    }
+
+    pub fn children(&self) -> Elements<Siblings> {
+        self.node.children().elements()
+    }
+
+    pub fn child_nodes(&self) -> Siblings {
         self.node.children()
     }
 
@@ -98,7 +121,9 @@ impl NodeSend {
         text.to_string()
     }
 
-    pub fn node_info(&self) -> (i32, String) {
+    // See https://dom.spec.whatwg.org/#interface-node for documentation
+    // TODO split into two functions
+    pub fn node_info(&self) -> (i8, String) {
         let data = self.node.data();
         match data {
             NodeData::Element(data) => {
@@ -107,9 +132,9 @@ impl NodeSend {
             NodeData::Text(_data) => {
                 (3, "#text".to_string())
             },
-            NodeData::ProcessingInstruction(_data) => {
-                // TODO fix
-                (7, "ProcessingInstruction".to_string())
+            NodeData::ProcessingInstruction(data) => {
+                // TODO test extraction of target
+                (7, data.borrow().0.to_string())
             },
             NodeData::Comment(_data) => {
                 (8, "#comment".to_string())
@@ -121,8 +146,8 @@ impl NodeSend {
                 (10, data.name.to_string())
             },
             NodeData::DocumentFragment => {
-                // TODO fix
-                (11, "DocumentFragment".to_string())
+                // TODO test
+                (11, "#document-fragment".to_string())
             },
         }
     }
