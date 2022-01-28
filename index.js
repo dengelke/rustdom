@@ -1,10 +1,36 @@
-const { parse, outerHTML, appendChild, createTextNode, querySelector, querySelectorAll, innerHTML, firstChild, lastChild, nextSibling, previousSibling, parentNode, textContent, nodeName, nodeType, children, childNodes } = require('./index.node');
+const { parse, outerHTML, hasChildNodes, appendChild, createTextNode, querySelector, querySelectorAll, innerHTML, firstChild, lastChild, nextSibling, previousSibling, parentNode, textContent, nodeName, nodeType, children, childNodes } = require('./index.node');
 
+function createNode (input) {
+    // If no input return null
+    if (!input) return null;
+    // Depending on nodeType create correct node
+    switch(input.nodeType) {
+        case 1:
+            return new Element(input._nodeSend, input.nodeType);
+        case 3:
+            return new Text(input._nodeSend, input.nodeType);
+        case 7:
+            return new ProcessingInstruction(input._nodeSend, input.nodeType);
+        case 8:
+            return new Comment(input._nodeSend, input.nodeType);
+        case 9:
+            return new Document(input._nodeSend, input.nodeType);
+        case 10:
+            return new DocumentType(input._nodeSend, input.nodeType);
+        case 11:
+            return new DocumentFragment(input._nodeSend, input.nodeType);
+        default:
+            throw Error('Unsupported Type');
+      }
+}
+
+// https://dom.spec.whatwg.org/#interface-node
 class Node {
     _data;
 
-    constructor (data) {
-        this._data = data
+    constructor (data, nodeType) {
+        this._data = data;
+        this.nodeType = nodeType;
     }
 
     static get ELEMENT_NODE() { return 1; }
@@ -23,7 +49,7 @@ class Node {
     // Not implemented (legacy)
     // static get ENTITY_NODE() { return 6; }
 
-    static get ENTITY_NODE() { return 7; }
+    static get PROCESSING_INSTRUCTION_NODE() { return 7; }
 
     static get COMMENT_NODE() { return 8; }
 
@@ -36,9 +62,9 @@ class Node {
     // Not implemented (legacy)
     // static get NOTATION_NODE() { return 12; }
 
-    get nodeType () {
-        return nodeType(this._data);
-    }
+    // get nodeType () {
+    //     return nodeType(this._data);
+    // }
 
     get nodeName () {
         return nodeName(this._data);
@@ -51,34 +77,36 @@ class Node {
 
     get parentNode () {
         const data = parentNode(this._data);
-        return data ? new Node(data) : null;
+        return createNode(data);
     }
 
     // readonly attribute Element? parentElement;
-    // boolean hasChildNodes();
-    // [SameObject] readonly attribute NodeList childNodes;
+    hasChildNodes() {
+        return hasChildNodes(this._data);
+    }
+
     get childNodes () {
-        return childNodes(this._data).map(data => new Node(data));
+        return childNodes(this._data).map(data => createNode(data));
     }
 
     get firstChild () {
         const data = firstChild(this._data);
-        return data ? new Node(data) : null;
+        return createNode(data);
     }
 
     get lastChild () {
         const data = lastChild(this._data);
-        return data ? new Node(data) : null;
+        return createNode(data);
     }
 
     get previousSibling () {
         const data = previousSibling(this._data);
-        return data ? new Node(data) : null;
+        return createNode(data);
     }
 
     get nextSibling () {
         const data = nextSibling(this._data);
-        return data ? new Node(data) : null;
+        return createNode(data);
     }
 
     // [CEReactions] attribute DOMString? nodeValue;
@@ -107,7 +135,6 @@ class Node {
     // boolean isDefaultNamespace(DOMString? namespace);
 
     // [CEReactions] Node insertBefore(Node node, Node? child);
-    // TODO check return value
     appendChild (node) {
         appendChild(this._data, node._data)
         return this
@@ -117,11 +144,6 @@ class Node {
 
     get nodeData () {
         return nodeData(this._data);
-    }
-
-    // Should be moved to element/mixin
-    get children () {
-        return children(this._data).map(data => new Node(data));
     }
 
     get outerHTML () {
@@ -139,15 +161,132 @@ class Node {
 
     querySelector (selector) {
         const data = querySelector(this._data, selector);
-        return data ? new Node(data) : null;
+        return createNode(data);
     }
 
     querySelectorAll (selector) {
-        return querySelectorAll(this._data, selector).map(data => new Node(data));
+        return querySelectorAll(this._data, selector).map(data => createNode(data));
     }
 }
 
+class Element extends Node {
+    // readonly attribute DOMString? namespaceURI;
+    // readonly attribute DOMString? prefix;
+    // readonly attribute DOMString localName;
+    // readonly attribute DOMString tagName;
+  
+    // [CEReactions] attribute DOMString id;
+    // [CEReactions] attribute DOMString className;
+    // [SameObject, PutForwards=value] readonly attribute DOMTokenList classList;
+    // [CEReactions, Unscopable] attribute DOMString slot;
+  
+    // boolean hasAttributes();
+    // [SameObject] readonly attribute NamedNodeMap attributes;
+    // sequence<DOMString> getAttributeNames();
+    // DOMString? getAttribute(DOMString qualifiedName);
+    // DOMString? getAttributeNS(DOMString? namespace, DOMString localName);
+    // [CEReactions] undefined setAttribute(DOMString qualifiedName, DOMString value);
+    // [CEReactions] undefined setAttributeNS(DOMString? namespace, DOMString qualifiedName, DOMString value);
+    // [CEReactions] undefined removeAttribute(DOMString qualifiedName);
+    // [CEReactions] undefined removeAttributeNS(DOMString? namespace, DOMString localName);
+    // [CEReactions] boolean toggleAttribute(DOMString qualifiedName, optional boolean force);
+    // boolean hasAttribute(DOMString qualifiedName);
+    // boolean hasAttributeNS(DOMString? namespace, DOMString localName);
+  
+    // Attr? getAttributeNode(DOMString qualifiedName);
+    // Attr? getAttributeNodeNS(DOMString? namespace, DOMString localName);
+    // [CEReactions] Attr? setAttributeNode(Attr attr);
+    // [CEReactions] Attr? setAttributeNodeNS(Attr attr);
+    // [CEReactions] Attr removeAttributeNode(Attr attr);
+  
+    // ShadowRoot attachShadow(ShadowRootInit init);
+    // readonly attribute ShadowRoot? shadowRoot;
+  
+    // Element? closest(DOMString selectors);
+    // boolean matches(DOMString selectors);
+    // boolean webkitMatchesSelector(DOMString selectors); // legacy alias of .matches
+  
+    // HTMLCollection getElementsByTagName(DOMString qualifiedName);
+    // HTMLCollection getElementsByTagNameNS(DOMString? namespace, DOMString localName);
+    // HTMLCollection getElementsByClassName(DOMString classNames);
+  
+    // [CEReactions] Element? insertAdjacentElement(DOMString where, Element element); // legacy
+    // undefined insertAdjacentText(DOMString where, DOMString data); // legacy
+
+    // Should be moved to element/mixin
+    get children () {
+        return children(this._data).map(data => createNode(data));
+    }
+}
+
+// https://dom.spec.whatwg.org/#interface-characterdata
+class CharacterData extends Node {
+    // attribute [LegacyNullToEmptyString] DOMString data;
+    // readonly attribute unsigned long length;
+    // DOMString substringData(unsigned long offset, unsigned long count);
+    // undefined appendData(DOMString data);
+    // undefined insertData(unsigned long offset, DOMString data);
+    // undefined deleteData(unsigned long offset, unsigned long count);
+    // undefined replaceData(unsigned long offset, unsigned long count, DOMString data);
+}
+
+// https://dom.spec.whatwg.org/#interface-text
+class Text extends CharacterData {
+    // constructor(optional DOMString data = "");
+  
+    // [NewObject] Text splitText(unsigned long offset);
+    // readonly attribute DOMString wholeText;
+};
+
+class ProcessingInstruction extends CharacterData {
+    // readonly attribute DOMString target;
+}
+
+class Comment extends Node {
+    // constructor(optional DOMString data = "");
+}
+
 class Document extends Node {
+
+    // [SameObject] readonly attribute DOMImplementation implementation;
+    // readonly attribute USVString URL;
+    // readonly attribute USVString documentURI;
+    // readonly attribute DOMString compatMode;
+    // readonly attribute DOMString characterSet;
+    // readonly attribute DOMString charset; // legacy alias of .characterSet
+    // readonly attribute DOMString inputEncoding; // legacy alias of .characterSet
+    // readonly attribute DOMString contentType;
+  
+    // readonly attribute DocumentType? doctype;
+    // readonly attribute Element? documentElement;
+    // HTMLCollection getElementsByTagName(DOMString qualifiedName);
+    // HTMLCollection getElementsByTagNameNS(DOMString? namespace, DOMString localName);
+    // HTMLCollection getElementsByClassName(DOMString classNames);
+  
+    // [CEReactions, NewObject] Element createElement(DOMString localName, optional (DOMString or ElementCreationOptions) options = {});
+    // [CEReactions, NewObject] Element createElementNS(DOMString? namespace, DOMString qualifiedName, optional (DOMString or ElementCreationOptions) options = {});
+    // [NewObject] DocumentFragment createDocumentFragment();
+    createTextNode(data) {
+        return createNode(createTextNode(data));
+    }
+    // [NewObject] CDATASection createCDATASection(DOMString data);
+    // [NewObject] Comment createComment(DOMString data);
+
+    // [NewObject] ProcessingInstruction createProcessingInstruction(DOMString target, DOMString data);
+  
+    // [CEReactions, NewObject] Node importNode(Node node, optional boolean deep = false);
+    // [CEReactions] Node adoptNode(Node node);
+  
+    // [NewObject] Attr createAttribute(DOMString localName);
+    // [NewObject] Attr createAttributeNS(DOMString? namespace, DOMString qualifiedName);
+  
+    // [NewObject] Event createEvent(DOMString interface); // legacy
+  
+    // [NewObject] Range createRange();
+  
+    // // NodeFilter.SHOW_ALL = 0xFFFFFFFF
+    // [NewObject] NodeIterator createNodeIterator(Node root, optional unsigned long whatToShow = 0xFFFFFFFF, optional NodeFilter? filter = null);
+    // [NewObject] TreeWalker createTreeWalker(Node root, optional unsigned long whatToShow = 0xFFFFFFFF, optional NodeFilter? filter = null);
 
     get body() {
         return this.querySelector('body');
@@ -156,22 +295,26 @@ class Document extends Node {
     get head() {
         return this.querySelector('head');;
     }
-
-    createTextNode(data) {
-        return new Node(createTextNode(data));
-    }
-
 }
+
+class DocumentType extends Node {
+    // readonly attribute DOMString name;
+    // readonly attribute DOMString publicId;
+    // readonly attribute DOMString systemId;
+};
+
+class DocumentFragment extends Node {
+    // constructor();
+};
 
 module.exports = class RustDOM {
     _data;
 
     constructor (input) {
-        this._data = parse(input);
-        this.document = new Document(this._data);
+        this.document = createNode(parse(input));
     }
 
     serialize () {
-        return outerHTML(this._data);
+        return this.document.outerHTML;
     }
 }

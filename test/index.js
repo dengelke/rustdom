@@ -57,6 +57,10 @@ describe('basic', () => {
   it('return parents textContent', () => {
     expect(basicDocument.querySelector('p').parentNode.textContent).to.equal('FooBar');
   });
+  it('hasChildNodes', () => {
+    expect(basicDocument.hasChildNodes()).to.equal(true);
+    expect(basicDocument.querySelector('p').firstChild.hasChildNodes()).to.equal(false);
+  });
   it('query id', () => {
     expect(basicDocument.querySelector('#Baz').textContent).to.equal('Bar');
     expect(basicDocument.querySelector('#Baz').innerHTML).to.equal('Bar');
@@ -74,13 +78,15 @@ describe('basic', () => {
 
 describe('list', () => {
   const basicDocument = new RustDOM(basicHtmlString).document;
-  it('return children and childNodes', () => {
-    expect(basicDocument.children[0].nodeName).to.equal('HTML');
+  it('return children', () => {
+    expect(basicDocument.body.children[0].nodeName).to.equal('P');
+  });
+  it('return childNodes', () => {
     expect(basicDocument.childNodes[0].nodeName).to.equal('html');
     expect(basicDocument.body.childNodes[2].nodeName).to.equal('#comment');
   });
   it('return empty on children', () => {
-    expect(basicDocument.querySelector('p').lastChild.children).to.deep.equal([]);
+    expect(basicDocument.querySelector('p').children).to.deep.equal([]);
   });
   it('queryAll', () => {
     const nodeList = basicDocument.body.querySelectorAll('p');
@@ -111,6 +117,12 @@ describe('null', () => {
   });
   it('return null on document parentNode', () => {
     expect(basicDocument.parentNode).to.equal(null);
+  });
+  it('return correct type on parent document', () => {
+    expect(basicDocument.firstChild.parentNode.nodeType).to.equal(9);
+    expect(basicDocument.firstChild.parentNode.firstChild.nodeType).to.equal(10);
+    expect(basicDocument.firstChild.parentNode.lastChild.nodeType).to.equal(1);
+    expect(basicDocument.firstChild.parentNode.firstChild.parentNode.nodeType).to.equal(9);
   });
 });
 

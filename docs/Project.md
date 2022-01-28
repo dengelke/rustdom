@@ -18,11 +18,11 @@
 - [x] Return JsValue instead of JsBox or Error
 - [x] Support children and querySelectorAll
 - [x] Support NodeList
+- [x] Handle document.body.parent.body correctly
 - [ ] Return nodeName correctly for all types (to be tested)
 - [ ] Support window in node.js
 - [ ] Update DOM properties
 - [ ] Add additional nodes to dom tree (POC done)
-- [ ] Handle document.body.parent.body correctly
 - [ ] Return DOM parsing errors
 - [ ] Support iteration over lists
 - [ ] Update to Typescript
