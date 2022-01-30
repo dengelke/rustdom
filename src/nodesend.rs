@@ -121,20 +121,6 @@ impl NodeSend {
         text.to_string()
     }
 
-    // See https://dom.spec.whatwg.org/#interface-node for documentation
-    pub fn node_type(&self) -> i8 {
-        let data = self.node.data();
-        match data {
-            NodeData::Element(..) => 1,
-            NodeData::Text(..) => 3,
-            NodeData::ProcessingInstruction(..) => 7,
-            NodeData::Comment(..) => 8,
-            NodeData::Document(..) => 9,
-            NodeData::Doctype(..) => 10,
-            NodeData::DocumentFragment => 11,
-        }
-    }
-
     pub fn node_name(&self) -> String {
         let data = self.node.data();
         match data {
@@ -149,4 +135,35 @@ impl NodeSend {
             NodeData::DocumentFragment => "#document-fragment".to_string(),
         }
     }
+
+    pub fn node_public_id(&self) -> String {
+        let data = self.node.as_doctype();
+        match data {
+            Some(data) => data.public_id.to_string(),
+            None => "".to_string()
+        }
+    }
+
+    pub fn node_system_id(&self) -> String {
+        let data = self.node.as_doctype();
+        match data {
+            Some(data) => data.system_id.to_string(),
+            None => "".to_string()
+        }
+    }
+    // See https://dom.spec.whatwg.org/#interface-node for documentation
+    pub fn node_type(&self) -> i8 {
+        let data = self.node.data();
+        match data {
+            NodeData::Element(..) => 1,
+            NodeData::Text(..) => 3,
+            NodeData::ProcessingInstruction(..) => 7,
+            NodeData::Comment(..) => 8,
+            NodeData::Document(..) => 9,
+            NodeData::Doctype(..) => 10,
+            NodeData::DocumentFragment => 11,
+        }
+    }
+
+
 }

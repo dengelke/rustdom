@@ -1,4 +1,4 @@
-const { parse, outerHTML, hasChildNodes, appendChild, createTextNode, querySelector, querySelectorAll, innerHTML, firstChild, lastChild, nextSibling, previousSibling, parentNode, textContent, nodeName, nodeType, children, childNodes } = require('./index.node');
+const { parse, outerHTML, hasChildNodes, appendChild, createTextNode, querySelector, querySelectorAll, innerHTML, firstChild, lastChild, nextSibling, previousSibling, parentNode, textContent, nodeName, publicId, systemId, children, childNodes } = require('./index.node');
 
 function createNode (input) {
     // If no input return null
@@ -158,15 +158,6 @@ class Node {
     get innerText () {
         return textContent(this._data);
     }
-
-    querySelector (selector) {
-        const data = querySelector(this._data, selector);
-        return createNode(data);
-    }
-
-    querySelectorAll (selector) {
-        return querySelectorAll(this._data, selector).map(data => createNode(data));
-    }
 }
 
 class Element extends Node {
@@ -215,7 +206,16 @@ class Element extends Node {
 
     // Should be moved to element/mixin
     get children () {
-        return children(this._data).map(data => createNode(data));
+        return children(this._data).map(data => new Element(data, 1));
+    }
+
+    querySelector (selector) {
+        const data = querySelector(this._data, selector);
+        return data ? new Element(data, 1) : null;
+    }
+
+    querySelectorAll (selector) {
+        return querySelectorAll(this._data, selector).map(data => new Element(data, 1));
     }
 }
 
@@ -246,7 +246,7 @@ class Comment extends Node {
     // constructor(optional DOMString data = "");
 }
 
-class Document extends Node {
+class Document extends Element {
 
     // [SameObject] readonly attribute DOMImplementation implementation;
     // readonly attribute USVString URL;
@@ -267,7 +267,7 @@ class Document extends Node {
     // [CEReactions, NewObject] Element createElementNS(DOMString? namespace, DOMString qualifiedName, optional (DOMString or ElementCreationOptions) options = {});
     // [NewObject] DocumentFragment createDocumentFragment();
     createTextNode(data) {
-        return createNode(createTextNode(data));
+        return new Text(createTextNode(data), 3);
     }
     // [NewObject] CDATASection createCDATASection(DOMString data);
     // [NewObject] Comment createComment(DOMString data);
@@ -298,9 +298,17 @@ class Document extends Node {
 }
 
 class DocumentType extends Node {
-    // readonly attribute DOMString name;
-    // readonly attribute DOMString publicId;
-    // readonly attribute DOMString systemId;
+    get name () {
+        return nodeName(this._data);
+    }
+
+    get publicId () {
+        return publicId(this._data);
+    }
+
+    get systemId () {
+        return systemId(this._data);
+    }
 };
 
 class DocumentFragment extends Node {

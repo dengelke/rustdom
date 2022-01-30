@@ -19,6 +19,7 @@
 - [x] Support children and querySelectorAll
 - [x] Support NodeList
 - [x] Handle document.body.parent.body correctly
+- [x] Optimise return based on known nodeTypes
 - [ ] Return nodeName correctly for all types (to be tested)
 - [ ] Support window in node.js
 - [ ] Update DOM properties

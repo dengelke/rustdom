@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const RustDOM = require('../');
 
-const basicHtmlString = `<!DOCTYPE html><html><head></head><body><p class="A">Foo</p><p id="Baz">Bar</p><!--' and '--></body></html>`;
+const basicHtmlString = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"><html><head></head><body><p class="A">Foo</p><p id="Baz">Bar</p><!--' and '--></body></html>`;
 
 describe('serialize tests', () => {
   it('should insert head and body tags', () => {
@@ -17,7 +17,7 @@ describe('serialize tests', () => {
 describe('basic', () => {
   const basicDocument = new RustDOM(basicHtmlString).document;
   it('parse valid dom and not remove DOCTYPE', () => {
-    expect(basicDocument.outerHTML).to.equal(basicHtmlString);
+    expect(basicDocument.outerHTML).to.equal(`<!DOCTYPE html><html><head></head><body><p class="A">Foo</p><p id="Baz">Bar</p><!--' and '--></body></html>`);
   });
   it('return body', () => {
     const body = basicDocument.body;
@@ -41,6 +41,9 @@ describe('basic', () => {
     expect(docType.nodeName).to.equal('html');
     expect(docType.innerHTML).to.equal('');
     expect(docType.outerHTML).to.equal('<!DOCTYPE html>');
+    expect(docType.name).to.equal('html');
+    expect(docType.publicId).to.equal('-//W3C//DTD HTML 4.0//EN');
+    expect(docType.systemId).to.equal('http://www.w3.org/TR/REC-html40/strict.dtd');
   });
   it('return firstChild textContent', () => {
     expect(basicDocument.querySelector('body').firstChild.textContent).to.equal('Foo');

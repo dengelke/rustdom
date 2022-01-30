@@ -57,15 +57,12 @@ fn query_selector(mut cx: FunctionContext) -> JsResult<JsValue> {
     let selector = cx.argument::<JsString>(1)?;
     let result = dom.borrow().query_selector(selector.value(&mut cx));
     match result {
-        Ok(node) => {
-            let node_type = node.node_type();
-            to_object(node, node_type, cx)
-        },
+        Ok(node) => Ok(cx.boxed(RefCell::new(node)).upcast()),
         Err(_err) => Ok(cx.null().upcast())
     }
 }
 
-fn query_selector_all(mut cx: FunctionContext) -> JsResult<JsValue> {
+fn query_selector_all(mut cx: FunctionContext) -> JsResult<JsArray> {
     let dom = cx.argument::<BoxedNode>(0)?;
     let selector = cx.argument::<JsString>(1)?;
     let result = dom.borrow().query_selector_all(selector.value(&mut cx));
@@ -73,25 +70,17 @@ fn query_selector_all(mut cx: FunctionContext) -> JsResult<JsValue> {
     for selector in result {
         for node in selector {
             let len = result_array.len(&mut cx);
-
-            let node = NodeSend::new_node(node.as_node().to_owned());
-            let node_type = cx.number(node.node_type());
-            let node_send = cx.boxed(RefCell::new(node));
-            let obj = cx.empty_object();
-            obj.set(&mut cx, "nodeType", node_type)?;
-            obj.set(&mut cx, "_nodeSend", node_send)?;
-
-            result_array.set(&mut cx, len, obj)?;
+            let boxed = cx.boxed(RefCell::new(NodeSend::new_node(node.as_node().to_owned())));
+            result_array.set(&mut cx, len, boxed)?;
         }
     }
-    Ok(result_array.upcast())
+    Ok(result_array)
 }
 
-fn create_text_node(mut cx: FunctionContext) -> JsResult<JsValue> {
+fn create_text_node(mut cx: FunctionContext) -> JsResult<BoxedNode> {
     let text = cx.argument::<JsString>(0)?;
     let node = NodeSend::create_text_node(text.value(&mut cx));
-    let node_type = node.node_type();
-    to_object(node, node_type, cx)
+    Ok(cx.boxed(RefCell::new(node)))
 }
 
 fn append_child(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -174,6 +163,18 @@ fn node_name(mut cx: FunctionContext) -> JsResult<JsString> {
     Ok(cx.string(result))
 }
 
+fn node_public_id(mut cx: FunctionContext) -> JsResult<JsString> {
+    let dom = cx.argument::<BoxedNode>(0)?;
+    let result = dom.borrow().node_public_id();
+    Ok(cx.string(result))
+}
+
+fn node_system_id(mut cx: FunctionContext) -> JsResult<JsString> {
+    let dom = cx.argument::<BoxedNode>(0)?;
+    let result = dom.borrow().node_system_id();
+    Ok(cx.string(result))
+}
+
 fn node_type(mut cx: FunctionContext) -> JsResult<JsNumber> {
     let dom = cx.argument::<BoxedNode>(0)?;
     let result = dom.borrow().node_type();
@@ -212,13 +213,8 @@ fn children(mut cx: FunctionContext) -> JsResult<JsArray> {
     let result_array = JsArray::new(&mut cx, 0);
     for node in result {
         let len = result_array.len(&mut cx);
-        let node = NodeSend::new_node(node.as_node().to_owned());
-        let node_type = cx.number(node.node_type());
-        let node_send = cx.boxed(RefCell::new(node));
-        let obj = cx.empty_object();
-        obj.set(&mut cx, "nodeType", node_type)?;
-        obj.set(&mut cx, "_nodeSend", node_send)?;
-        result_array.set(&mut cx, len, obj)?;
+        let boxed = cx.boxed(RefCell::new(NodeSend::new_node(node.as_node().to_owned())));
+        result_array.set(&mut cx, len, boxed)?;
     }
     Ok(result_array)
 }
@@ -239,6 +235,8 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
     cx.export_function("parentNode", parent_node)?;
     cx.export_function("textContent", text_content)?;
     cx.export_function("nodeName", node_name)?;
+    cx.export_function("publicId", node_public_id)?;
+    cx.export_function("systemId", node_system_id)?;
     cx.export_function("nodeType", node_type)?;
     cx.export_function("children", children)?;
     cx.export_function("childNodes", child_nodes)?;
