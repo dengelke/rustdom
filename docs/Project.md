@@ -20,10 +20,11 @@
 - [x] Support NodeList
 - [x] Handle document.body.parent.body correctly
 - [x] Optimise return based on known nodeTypes
+- [x] Update to neon 0.10
 - [ ] Return nodeName correctly for all types (to be tested)
 - [ ] Support window in node.js
 - [ ] Update DOM properties
-- [ ] Add additional nodes to dom tree (POC done)
+- [ ] Add additional nodes to dom tree
 - [ ] Return DOM parsing errors
 - [ ] Support iteration over lists
 - [ ] Update to Typescript
@@ -32,10 +33,10 @@
 - [ ] Implement rwlock or other thread safety mechanism
 - [ ] Performance benchmarking
 - [ ] Write blog article
-- [ ] Node.js Async API using JsPromise 
 
 ## Optional
 - [ ] Graceful error handling throughout API
 - [ ] Investigate removing html5ever dependency
 - [ ] Load from url using node-fetch
 - [ ] Load from file using fs
+- [ ] Node.js Async API using JsPromise 
