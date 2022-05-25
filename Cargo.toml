@@ -1,6 +1,6 @@
 [package]
 name = "rustdom"
-version = "0.2.6"
+version = "0.2.7"
 license = "MIT"
 edition = "2018"
 exclude = ["index.node"]
@@ -15,6 +15,6 @@ html5ever = "0.25.1"
 kuchiki = "0.8.1"
 
 [dependencies.neon]
-version = "0.9"
+version = "0.10"
 default-features = false
 features = ["napi-6"]
