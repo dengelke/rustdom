@@ -17,6 +17,7 @@
   "devDependencies": {
     "chai": "^1.10.0",
     "concurrently": "^7.0.0",
+    "del-cli": "^4.0.1",
     "mocha": "^10.0.0",
     "nodemon": "^2.0.15"
   },
@@ -27,10 +28,11 @@
     "build": "cargo-cp-artifact -nc index.node -- cargo build --message-format=json-render-diagnostics",
     "build-debug": "npm run build --",
     "build-release": "npm run build -- --release",
+    "clean": "del index.node",
     "install": "npm run build-release",
     "test": "npx mocha test",
     "watch-rs": "npx nodemon -e rs --exec \"npm run build-debug\"",
     "watch-js": "npx nodemon --ignore 'src/*.rs' --watch index.node --watch index.js --watch test --exec \"npm run test\"",
-    "watch": "concurrently \"npm run watch-js\" \"npm run watch-rs\""
+    "watch": "npm run clean && concurrently \"npm run watch-js\" \"npm run watch-rs\""
   }
 }

@@ -32,6 +32,10 @@ impl NodeSend {
         NodeSend { node }
     }
 
+    pub fn is_equal_node(&self, node: &NodeSend) -> bool {
+        self.node.eq(&node.node)
+    }
+
     pub fn new_node(node: NodeRef) -> Self {
         NodeSend { node }
     }
@@ -43,6 +47,10 @@ impl NodeSend {
 
     pub fn append_child(&mut self, new_child: &NodeSend) -> () {
         self.node.append(new_child.node.clone())
+    }
+
+    pub fn detach(&mut self) -> () {
+        self.node.detach();
     }
 
     pub fn inner_html(&self) -> String {
