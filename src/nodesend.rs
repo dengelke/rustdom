@@ -32,8 +32,17 @@ impl NodeSend {
         NodeSend { node }
     }
 
-    pub fn is_equal_node(&self, node: &NodeSend) -> bool {
+    pub fn eq(&self, node: &NodeSend) -> bool {
         self.node.eq(&node.node)
+    }
+
+    // Test if node passed is a child of this node
+    pub fn is_child(&self, node: &NodeSend) -> bool {
+        let child_parent_result = node.parent_node();
+        match child_parent_result {
+            Ok(child_parent) => self.eq(&child_parent),
+            Err(_err) => false,
+        }
     }
 
     pub fn new_node(node: NodeRef) -> Self {

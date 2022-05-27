@@ -94,17 +94,11 @@ fn remove_child(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     let parent = cx.argument::<BoxedNode>(0)?;
     let child = cx.argument::<BoxedNode>(1)?;
     let error_string = "Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.";
-    let child_parent_result = child.borrow().parent_node();
-    match child_parent_result {
-        Ok(child_parent) => {
-            if child_parent.is_equal_node(&parent.borrow()) {
-                child.borrow_mut().detach();
-                Ok(cx.undefined())
-            } else {
-                cx.throw_error(error_string)
-            }
-        },
-        Err(_err) => cx.throw_error(error_string),
+    if parent.borrow().is_child(&child.borrow()) {
+        child.borrow_mut().detach();
+        Ok(cx.undefined())
+    } else {
+        cx.throw_error(error_string)
     }
 }
 
