@@ -209,6 +209,13 @@ fn child_nodes(mut cx: FunctionContext) -> JsResult<JsValue> {
     Ok(result_array.upcast())
 }
 
+fn is_equal_node(mut cx: FunctionContext) -> JsResult<JsBoolean> {
+    let node = cx.argument::<BoxedNode>(0)?;
+    let other_node = cx.argument::<BoxedNode>(1)?;
+    let result = node.borrow().eq(&other_node.borrow());
+    Ok(cx.boolean(result))
+}
+
 fn has_child_nodes(mut cx: FunctionContext) -> JsResult<JsBoolean> {
     let dom = cx.argument::<BoxedNode>(0)?;
     let result = dom.borrow().first_child();
@@ -252,6 +259,7 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
     cx.export_function("nodeType", node_type)?;
     cx.export_function("children", children)?;
     cx.export_function("childNodes", child_nodes)?;
+    cx.export_function("isEqualNode", is_equal_node)?;
     cx.export_function("hasChildNodes", has_child_nodes)?;
     Ok(())
 }
