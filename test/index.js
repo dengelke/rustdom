@@ -148,10 +148,10 @@ describe('create node', () => {
 describe('remove child', () => {
   const basicDocument = new RustDOM(basicHtmlString).document;
   it('should throw type error if null', () => {
-    expect(() => basicDocument.body.removeChild(null)).to.throw(TypeError, "Failed to execute 'removeChild' on 'Node': parameter 1 is not of type 'Node'");
+    expect(() => basicDocument.body.removeChild(null)).to.throw(TypeError).with.property('message', "Failed to execute 'removeChild' on 'Node': parameter 1 is not of type 'Node'");
   });
   it('should throw error if incorrect parent', () => {
-    expect(() => basicDocument.body.children[1].removeChild(basicDocument.body.children[0])).to.throw(DOMException, "Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.");
+    expect(() => basicDocument.body.children[1].removeChild(basicDocument.body.children[0])).to.throw(DOMException).with.property('message', "Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.");
   });
   it('should work', () => {
     expect(basicDocument.body.removeChild(basicDocument.body.firstChild).firstChild.textContent).to.equal("Bar");
@@ -161,7 +161,7 @@ describe('remove child', () => {
 describe('is equal node', () => {
   const basicDocument = new RustDOM(basicHtmlString).document;
   it('should throw type error if null', () => {
-    expect(() => basicDocument.body.isEqualNode(null)).to.throw(TypeError, "Failed to execute 'isEqualNode' on 'Node': parameter 1 is not of type 'Node'");
+    expect(() => basicDocument.body.isEqualNode(null)).to.throw(TypeError).with.property('message', "Failed to execute 'isEqualNode' on 'Node': parameter 1 is not of type 'Node'");
   });
   it('should be false if not equal', () => {
     expect(basicDocument.body.isEqualNode(basicDocument.body.children[0])).to.equal(false);

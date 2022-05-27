@@ -16,10 +16,8 @@
   "license": "MIT",
   "devDependencies": {
     "chai": "^1.10.0",
-    "concurrently": "^7.0.0",
-    "del-cli": "^4.0.1",
-    "mocha": "^10.0.0",
-    "nodemon": "^2.0.15"
+    "concurrently": "^7.2.1",
+    "mocha": "^10.0.0"
   },
   "dependencies": {
     "cargo-cp-artifact": "^0.1"
@@ -28,11 +26,10 @@
     "build": "cargo-cp-artifact -nc index.node -- cargo build --message-format=json-render-diagnostics",
     "build-debug": "npm run build --",
     "build-release": "npm run build -- --release",
-    "clean": "del index.node",
     "install": "npm run build-release",
     "test": "npx mocha test",
-    "watch-rs": "npx nodemon -e rs --exec \"npm run build-debug\"",
-    "watch-js": "npx nodemon --ignore 'src/*.rs' --watch index.node --watch index.js --watch test --exec \"npm run test\"",
-    "watch": "npm run clean && concurrently \"npm run watch-js\" \"npm run watch-rs\""
+    "watch-rs": "cargo watch --quiet -i index.js -i index.node -i test -i lib -- cargo-cp-artifact -nc index.node -- cargo build --message-format=json-render-diagnostics",
+    "watch-js": "cargo watch --quiet --no-gitignore --postpone -i src -w index.node -w index.js -w test -w lib -- npm run test",
+    "watch": "concurrently \"npm run watch-rs\" \"npm run watch-js\""
   }
 }
