@@ -157,3 +157,16 @@ describe('remove child', () => {
     expect(basicDocument.body.removeChild(basicDocument.body.firstChild).firstChild.textContent).to.equal("Bar");
   });
 });
+
+describe('is equal node', () => {
+  const basicDocument = new RustDOM(basicHtmlString).document;
+  it('should throw type error if null', () => {
+    expect(() => basicDocument.body.isEqualNode(null)).to.throw(TypeError, "Failed to execute 'isEqualNode' on 'Node': parameter 1 is not of type 'Node'");
+  });
+  it('should be false if not equal', () => {
+    expect(basicDocument.body.isEqualNode(basicDocument.body.children[0])).to.equal(false);
+  });
+  it('should be true if equal', () => {
+    expect(basicDocument.body.isEqualNode(basicDocument.body)).to.equal(true);
+  });
+});

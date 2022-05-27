@@ -1,24 +1,25 @@
 const { 
-    parse, 
-    outerHTML, 
-    hasChildNodes, 
     appendChild, 
-    removeChild,
+    childNodes,
+    children, 
     createTextNode, 
-    querySelector,
-    querySelectorAll, 
-    innerHTML, 
     firstChild, 
+    hasChildNodes, 
+    innerHTML, 
+    isEqualNode,
     lastChild, 
     nextSibling, 
-    previousSibling, 
-    parentNode, 
-    textContent, 
     nodeName, 
+    outerHTML, 
+    parentNode, 
+    parse, 
+    previousSibling, 
     publicId, 
+    querySelector,
+    querySelectorAll, 
+    removeChild,
     systemId, 
-    children, 
-    childNodes,
+    textContent, 
 } = require('./index.node');
 
 function createNode (input) {
@@ -142,6 +143,10 @@ class Node {
 
     // [CEReactions, NewObject] Node cloneNode(optional boolean deep = false);
     // boolean isEqualNode(Node? otherNode);
+    isEqualNode (otherNode) {
+        if (!(otherNode instanceof Node)) throw TypeError("Failed to execute 'isEqualNode' on 'Node': parameter 1 is not of type 'Node'");
+        return isEqualNode(this._data, otherNode._data);
+    }
     // boolean isSameNode(Node? otherNode); // legacy alias of ===
   
     // const unsigned short DOCUMENT_POSITION_DISCONNECTED = 0x01;
