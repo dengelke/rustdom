@@ -3,6 +3,8 @@ const RustDOM = require('../');
 
 const basicHtmlString = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"><html><head></head><body><p class="A">Foo</p><p id="Baz">Bar</p><!--' and '--></body></html>`;
 
+const DOMException = require('../lib/domexception');
+
 describe('serialize tests', () => {
   it('should insert head and body tags', () => {
     const document = new RustDOM("<!DOCTYPE html>Test");
@@ -19,6 +21,10 @@ describe('basic', () => {
   it('parse valid dom and not remove DOCTYPE', () => {
     expect(basicDocument.outerHTML).to.equal(`<!DOCTYPE html><html><head></head><body><p class="A">Foo</p><p id="Baz">Bar</p><!--' and '--></body></html>`);
   });
+  it('return document', () => {
+    expect(basicDocument.nodeName).to.equal('#document');
+    expect(basicDocument.nodeType).to.equal(9);
+  });
   it('return body', () => {
     const body = basicDocument.body;
     expect(body.textContent).to.equal('FooBar');
@@ -33,7 +39,6 @@ describe('basic', () => {
     expect(head.nodeName).to.equal('HEAD');
     expect(head.innerHTML).to.equal('');
     expect(head.outerHTML).to.equal('<head></head>');
-
   });
   it('return doctype', () => {
     const docType = basicDocument.firstChild;
@@ -137,5 +142,18 @@ describe('create node', () => {
   it('should append text', () => {
     const textNode = basicDocument.createTextNode('new text node')
     expect(basicDocument.appendChild(textNode).lastChild.textContent).to.equal('new text node');
+  });
+});
+
+describe('remove child', () => {
+  const basicDocument = new RustDOM(basicHtmlString).document;
+  it('should throw type error if null', () => {
+    expect(() => basicDocument.body.removeChild(null)).to.throw(TypeError, "Failed to execute 'removeChild' on 'Node': parameter 1 is not of type 'Node'");
+  });
+  it('should throw error if incorrect parent', () => {
+    expect(() => basicDocument.body.children[1].removeChild(basicDocument.body.children[0])).to.throw(DOMException, "Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.");
+  });
+  it('should work', () => {
+    expect(basicDocument.body.removeChild(basicDocument.body.firstChild).firstChild.textContent).to.equal("Bar");
   });
 });

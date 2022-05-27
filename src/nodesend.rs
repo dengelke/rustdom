@@ -32,6 +32,19 @@ impl NodeSend {
         NodeSend { node }
     }
 
+    pub fn eq(&self, node: &NodeSend) -> bool {
+        self.node.eq(&node.node)
+    }
+
+    // Test if node passed is a child of this node
+    pub fn is_child(&self, node: &NodeSend) -> bool {
+        let child_parent_result = node.parent_node();
+        match child_parent_result {
+            Ok(child_parent) => self.eq(&child_parent),
+            Err(_err) => false,
+        }
+    }
+
     pub fn new_node(node: NodeRef) -> Self {
         NodeSend { node }
     }
@@ -43,6 +56,10 @@ impl NodeSend {
 
     pub fn append_child(&mut self, new_child: &NodeSend) -> () {
         self.node.append(new_child.node.clone())
+    }
+
+    pub fn detach(&mut self) -> () {
+        self.node.detach();
     }
 
     pub fn inner_html(&self) -> String {

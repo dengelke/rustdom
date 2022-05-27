@@ -90,6 +90,17 @@ fn append_child(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     Ok(cx.undefined())
 }
 
+fn remove_child(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+    let parent = cx.argument::<BoxedNode>(0)?;
+    let child = cx.argument::<BoxedNode>(1)?;
+    let error_string = "Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.";
+    if parent.borrow().is_child(&child.borrow()) {
+        child.borrow_mut().detach();
+        Ok(cx.undefined())
+    } else {
+        cx.throw_error(error_string)
+    }
+}
 
 fn first_child(mut cx: FunctionContext) -> JsResult<JsValue> {
     let dom = cx.argument::<BoxedNode>(0)?;
@@ -224,6 +235,7 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
     cx.export_function("parse", parse)?;
     cx.export_function("createTextNode", create_text_node)?;
     cx.export_function("appendChild", append_child)?;
+    cx.export_function("removeChild", remove_child)?;
     cx.export_function("innerHTML", inner_html)?;
     cx.export_function("outerHTML", outer_html)?;
     cx.export_function("querySelector", query_selector)?;

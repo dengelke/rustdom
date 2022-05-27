@@ -1,4 +1,25 @@
-const { parse, outerHTML, hasChildNodes, appendChild, createTextNode, querySelector, querySelectorAll, innerHTML, firstChild, lastChild, nextSibling, previousSibling, parentNode, textContent, nodeName, publicId, systemId, children, childNodes } = require('./index.node');
+const { 
+    parse, 
+    outerHTML, 
+    hasChildNodes, 
+    appendChild, 
+    removeChild,
+    createTextNode, 
+    querySelector,
+    querySelectorAll, 
+    innerHTML, 
+    firstChild, 
+    lastChild, 
+    nextSibling, 
+    previousSibling, 
+    parentNode, 
+    textContent, 
+    nodeName, 
+    publicId, 
+    systemId, 
+    children, 
+    childNodes,
+} = require('./index.node');
 
 function createNode (input) {
     // If no input return null
@@ -23,6 +44,8 @@ function createNode (input) {
             throw Error('Unsupported Type');
       }
 }
+
+const DOMException = require('./lib/domexception');
 
 // https://dom.spec.whatwg.org/#interface-node
 class Node {
@@ -133,14 +156,27 @@ class Node {
     // DOMString? lookupPrefix(DOMString? namespace);
     // DOMString? lookupNamespaceURI(DOMString? prefix);
     // boolean isDefaultNamespace(DOMString? namespace);
-
     // [CEReactions] Node insertBefore(Node node, Node? child);
+
     appendChild (node) {
-        appendChild(this._data, node._data)
-        return this
+        appendChild(this._data, node._data);
+        return this;
     }
+
     // [CEReactions] Node replaceChild(Node node, Node child);
     // [CEReactions] Node removeChild(Node child);
+
+    removeChild (node) {
+        // TODO Use Typescript for node type
+        if (!(node instanceof Node)) throw TypeError("Failed to execute 'removeChild' on 'Node': parameter 1 is not of type 'Node'");
+        try {
+            removeChild(this._data, node._data);
+            return this;
+        } catch (err) {
+            // Throw DOMException if not child of node
+            throw new DOMException(err.message);
+        }
+    }
 
     get nodeData () {
         return nodeData(this._data);
