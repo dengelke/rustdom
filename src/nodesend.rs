@@ -32,6 +32,13 @@ impl NodeSend {
         NodeSend { node }
     }
 
+    // TODO Fix since that deep has no effect on empty elements, such as the <img> and <input> elements.
+    pub fn shallow_clone(&self) -> Self {
+        let data = self.node.data().to_owned();
+        let node = NodeRef::new(data);
+        NodeSend { node }
+    }
+
     pub fn eq(&self, node: &NodeSend) -> bool {
         self.node.eq(&node.node)
     }
@@ -181,6 +188,4 @@ impl NodeSend {
             NodeData::DocumentFragment => 11,
         }
     }
-
-
 }

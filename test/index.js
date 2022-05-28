@@ -3,6 +3,8 @@ const RustDOM = require('../');
 
 const basicHtmlString = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"><html><head></head><body><p class="A">Foo</p><p id="Baz">Bar</p><!--' and '--></body></html>`;
 
+const equalityTestString = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"><html><head></head><body><p class="A">Foo</p><p id="Baz">Bar</p><p class="A">Foo</p></body></html>`;
+
 const DOMException = require('../lib/domexception');
 
 describe('serialize tests', () => {
@@ -62,8 +64,14 @@ describe('basic', () => {
   it('return lastChild previousSibling textContent', () => {
     expect(basicDocument.querySelector('body').firstChild.nextSibling.textContent).to.equal('Bar');
   });
-  it('return parents textContent', () => {
+  it('return parentNode textContent', () => {
     expect(basicDocument.querySelector('p').parentNode.textContent).to.equal('FooBar');
+  });
+  it('return parentElement textContent', () => {
+    expect(basicDocument.querySelector('p').parentElement.textContent).to.equal('FooBar');
+  });
+  it('return parentElement null if not element', () => {
+    expect(basicDocument.firstChild.parentElement).to.equal(null);
   });
   it('hasChildNodes', () => {
     expect(basicDocument.hasChildNodes()).to.equal(true);
@@ -78,6 +86,9 @@ describe('basic', () => {
   });
   it('query nodeName', () => {
     expect(basicDocument.querySelector('p').nodeName).to.equal('P');
+  });
+  it('query tagName', () => {
+    expect(basicDocument.querySelector('p').tagName).to.equal('P');
   });
   it('query nodeType', () => {
     expect(basicDocument.nodeType).to.equal(9);
@@ -140,9 +151,33 @@ describe('create node', () => {
     expect(basicDocument.createTextNode('new text').textContent).to.equal('new text');
   });
   it('should append text', () => {
-    const textNode = basicDocument.createTextNode('new text node')
+    const textNode = basicDocument.createTextNode('new text node');
+    expect(textNode.nodeType).to.equal(3);
     expect(basicDocument.appendChild(textNode).lastChild.textContent).to.equal('new text node');
   });
+});
+
+describe('clone node', () => {
+  const basicDocument = new RustDOM(basicHtmlString).document;
+  it('should shallow clone and append', () => {
+    expect(basicDocument.body.children.length).to.equal(2);
+    const clonedNode = basicDocument.body.children[1].cloneNode(false);
+    expect(clonedNode.nodeType).to.equal(1);
+    expect(clonedNode.textContent).to.equal("");
+    basicDocument.body.appendChild(clonedNode);
+    expect(basicDocument.body.children.length).to.equal(3);
+    expect(basicDocument.body.children[2].textContent).to.equal("");
+  });
+  // TODO
+  // it('should deep clone and append', () => {
+  //   expect(basicDocument.body.children.length).to.equal(2);
+  //   const clonedNode = basicDocument.body.children[1].cloneNode(false);
+  //   expect(clonedNode.nodeType).to.equal(1);
+  //   expect(clonedNode.textContent).to.equal("Foo");
+  //   basicDocument.body.appendChild(clonedNode);
+  //   expect(basicDocument.body.children.length).to.equal(3);
+  //   expect(basicDocument.body.children[2].textContent).to.equal("");
+  // });
 });
 
 describe('remove child', () => {
@@ -158,15 +193,21 @@ describe('remove child', () => {
   });
 });
 
-describe('is equal node', () => {
-  const basicDocument = new RustDOM(basicHtmlString).document;
-  it('should throw type error if null', () => {
-    expect(() => basicDocument.body.isEqualNode(null)).to.throw(TypeError).with.property('message', "Failed to execute 'isEqualNode' on 'Node': parameter 1 is not of type 'Node'");
+describe('is same node', () => {
+  const basicDocument = new RustDOM(equalityTestString).document;
+  it('should return false if null', () => {
+    expect(basicDocument.body.isSameNode(null)).to.equal(false);
+  });
+  it('should throw type error if not a node', () => {
+    expect(() => basicDocument.body.isSameNode({})).to.throw(TypeError).with.property('message', "Failed to execute 'isSameNode' on 'Node': parameter 1 is not of type 'Node'");
   });
   it('should be false if not equal', () => {
-    expect(basicDocument.body.isEqualNode(basicDocument.body.children[0])).to.equal(false);
+    expect(basicDocument.body.isSameNode(basicDocument.body.children[0])).to.equal(false);
   });
   it('should be true if equal', () => {
-    expect(basicDocument.body.isEqualNode(basicDocument.body)).to.equal(true);
+    expect(basicDocument.body.isSameNode(basicDocument.body)).to.equal(true);
   });
-});
+  it('should be false if different nodes', () => {
+    expect(basicDocument.body.children[0].isSameNode(basicDocument.body.children[2])).to.equal(false);
+  });
+})

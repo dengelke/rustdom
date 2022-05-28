@@ -53,7 +53,7 @@ In the project directory, you can run:
 
 Installs the project, including running `npm run build`.
 
-### `npm build`
+### `npm run build`
 
 Builds the Node addon (`index.node`) from source.
 
@@ -63,17 +63,21 @@ Additional [`cargo build`](https://doc.rust-lang.org/cargo/commands/cargo-build.
 npm run build -- --feature=beetle
 ```
 
-#### `npm build-debug`
+#### `npm run build-debug`
 
-Alias for `npm build`.
+Alias for `npm run build`.
 
-#### `npm build-release`
+#### `npm run build-release`
 
 Same as [`npm build`](#npm-build) but, builds the module with the [`release`](https://doc.rust-lang.org/cargo/reference/profiles.html#release) profile. Release builds will compile slower, but run faster.
 
 ### `npm test`
 
-Runs the unit tests by calling `npx mocha test`
+Runs the unit tests by calling `npx mocha test`.
+
+### `npm run watch`
+
+Watch for changes and run `npm test` on any change.
 
 ## Files
 
