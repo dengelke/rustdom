@@ -2,15 +2,17 @@ const {
     appendChild, 
     childNodes,
     children, 
+    cloneNode,
     createTextNode, 
     firstChild, 
     hasChildNodes, 
     innerHTML, 
-    isEqualNode,
+    isSameNode,
     lastChild, 
     nextSibling, 
     nodeName, 
     outerHTML, 
+    parentElement,
     parentNode, 
     parse, 
     previousSibling, 
@@ -86,17 +88,19 @@ class Node {
     // Not implemented (legacy)
     // static get NOTATION_NODE() { return 12; }
 
-    // get nodeType () {
-    //     return nodeType(this._data);
-    // }
-
     get nodeName () {
         return nodeName(this._data);
     }
 
     // readonly attribute USVString baseURI;
     // readonly attribute boolean isConnected;
+
+    // The read-only ownerDocument property of the Node interface returns the top-level document object of the node.
+    // If this property is used on a node that is itself a document, the value is null.
     // readonly attribute Document? ownerDocument;
+    // get ownerDocument () {
+
+    // }
     // Node getRootNode(optional GetRootNodeOptions options = {});
 
     get parentNode () {
@@ -104,7 +108,14 @@ class Node {
         return createNode(data);
     }
 
+    // A node’s parent of type Element is known as its parent element. If the node has a parent of a different type, its parent element is null.
     // readonly attribute Element? parentElement;
+
+    get parentElement () {
+        const data = parentElement(this._data);
+        return data ? new Element(data, 1) : null
+    }
+
     hasChildNodes() {
         return hasChildNodes(this._data);
     }
@@ -141,13 +152,50 @@ class Node {
 
     // [CEReactions] undefined normalize();
 
+    // TODO fix
     // [CEReactions, NewObject] Node cloneNode(optional boolean deep = false);
-    // boolean isEqualNode(Node? otherNode);
-    isEqualNode (otherNode) {
-        if (!(otherNode instanceof Node)) throw TypeError("Failed to execute 'isEqualNode' on 'Node': parameter 1 is not of type 'Node'");
-        return isEqualNode(this._data, otherNode._data);
+    cloneNode (deep = false) {
+        const data = cloneNode(this._data, deep);
+        return createNode(data)
     }
+
+    // TODO check properties
+
+    // isEqualNode (otherNode) {
+    //     // If otherNode is null, isEqualNode() always return false.
+    //     if (otherNode === null) return false;
+    //     // Check if otherNode is a Node
+    //     if (!(otherNode instanceof Node)) throw TypeError("Failed to execute 'isSameNode' on 'Node': parameter 1 is not of type 'Node'");
+    //     return isEqualNode(this._data, otherNode._data);
+    // }
+
+    // Alternative implementation
+    // isEqualNode(node) {
+    //     if (this === node)
+    //       return true;
+    //     if (this.nodeType === node.nodeType) {
+    //       switch (this.nodeType) {
+    //         case DOCUMENT_NODE:
+    //         case DOCUMENT_FRAGMENT_NODE: {
+    //           const aNodes = this.childNodes;
+    //           const bNodes = node.childNodes;
+    //           return aNodes.length === bNodes.length && aNodes.every((node, i) => node.isEqualNode(bNodes[i]));
+    //         }
+    //       }
+    //       return this.toString() === node.toString();
+    //     }
+    //     return false;
+    //   }
+
+    // Legacy
     // boolean isSameNode(Node? otherNode); // legacy alias of ===
+    isSameNode (otherNode) {
+        // If otherNode is null, isSameNode() always return false.
+        if (otherNode === null) return false;
+        // Check if otherNode is a Node
+        if (!(otherNode instanceof Node)) throw TypeError("Failed to execute 'isSameNode' on 'Node': parameter 1 is not of type 'Node'");
+        return isSameNode(this._data, otherNode._data);
+    }
   
     // const unsigned short DOCUMENT_POSITION_DISCONNECTED = 0x01;
     // const unsigned short DOCUMENT_POSITION_PRECEDING = 0x02;
@@ -163,19 +211,18 @@ class Node {
     // boolean isDefaultNamespace(DOMString? namespace);
     // [CEReactions] Node insertBefore(Node node, Node? child);
 
-    appendChild (node) {
-        appendChild(this._data, node._data);
+    appendChild (child) {
+        appendChild(this._data, child._data);
         return this;
     }
 
     // [CEReactions] Node replaceChild(Node node, Node child);
-    // [CEReactions] Node removeChild(Node child);
 
-    removeChild (node) {
+    removeChild (child) {
         // TODO Use Typescript for node type
-        if (!(node instanceof Node)) throw TypeError("Failed to execute 'removeChild' on 'Node': parameter 1 is not of type 'Node'");
+        if (!(child instanceof Node)) throw TypeError("Failed to execute 'removeChild' on 'Node': parameter 1 is not of type 'Node'");
         try {
-            removeChild(this._data, node._data);
+            removeChild(this._data, child._data);
             return this;
         } catch (err) {
             // Throw DOMException if not child of node
@@ -205,7 +252,14 @@ class Element extends Node {
     // readonly attribute DOMString? namespaceURI;
     // readonly attribute DOMString? prefix;
     // readonly attribute DOMString localName;
+    // get localName () {
+
+    // }
     // readonly attribute DOMString tagName;
+    get tagName () {
+        // Reuse nodeName as will return same result if element
+        return nodeName(this._data);
+    }
   
     // [CEReactions] attribute DOMString id;
     // [CEReactions] attribute DOMString className;

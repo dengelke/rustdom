@@ -77,6 +77,15 @@ fn query_selector_all(mut cx: FunctionContext) -> JsResult<JsArray> {
     Ok(result_array)
 }
 
+fn clone_node(mut cx: FunctionContext) -> JsResult<JsValue> {
+    let node = cx.argument::<BoxedNode>(0)?;
+    // TODO add deep clone functionality
+    // let deep = cx.argument::<JsBoolean>(1)?;
+    let cloned_node = node.borrow_mut().shallow_clone();
+    let node_type = cloned_node.node_type();
+    to_object(cloned_node, node_type, cx)
+}
+
 fn create_text_node(mut cx: FunctionContext) -> JsResult<BoxedNode> {
     let text = cx.argument::<JsString>(0)?;
     let node = NodeSend::create_text_node(text.value(&mut cx));
@@ -150,6 +159,19 @@ fn next_sibling(mut cx: FunctionContext) -> JsResult<JsValue> {
     }
 }
 
+fn parent_element(mut cx: FunctionContext) -> JsResult<JsValue> {
+    let dom = cx.argument::<BoxedNode>(0)?;
+    let result = dom.borrow().parent_node();
+    match result {
+        Ok(node) => {
+            let node_type = node.node_type();
+            if node_type == 1 { Ok(cx.boxed(RefCell::new(node)).upcast()) }
+            else { Ok(cx.null().upcast()) }
+        },
+        Err(_err) => Ok(cx.null().upcast())
+    }
+}
+
 fn parent_node(mut cx: FunctionContext) -> JsResult<JsValue> {
     let dom = cx.argument::<BoxedNode>(0)?;
     let result = dom.borrow().parent_node();
@@ -209,7 +231,7 @@ fn child_nodes(mut cx: FunctionContext) -> JsResult<JsValue> {
     Ok(result_array.upcast())
 }
 
-fn is_equal_node(mut cx: FunctionContext) -> JsResult<JsBoolean> {
+fn is_same_node(mut cx: FunctionContext) -> JsResult<JsBoolean> {
     let node = cx.argument::<BoxedNode>(0)?;
     let other_node = cx.argument::<BoxedNode>(1)?;
     let result = node.borrow().eq(&other_node.borrow());
@@ -239,27 +261,29 @@ fn children(mut cx: FunctionContext) -> JsResult<JsArray> {
 
 #[neon::main]
 fn main(mut cx: ModuleContext) -> NeonResult<()> {
-    cx.export_function("parse", parse)?;
-    cx.export_function("createTextNode", create_text_node)?;
     cx.export_function("appendChild", append_child)?;
-    cx.export_function("removeChild", remove_child)?;
+    cx.export_function("childNodes", child_nodes)?;
+    cx.export_function("children", children)?;
+    cx.export_function("cloneNode", clone_node)?;
+    cx.export_function("createTextNode", create_text_node)?;
+    cx.export_function("firstChild", first_child)?;
+    cx.export_function("hasChildNodes", has_child_nodes)?;
     cx.export_function("innerHTML", inner_html)?;
+    cx.export_function("isSameNode", is_same_node)?;
+    cx.export_function("lastChild", last_child)?;
+    cx.export_function("nextSibling", next_sibling)?;
+    cx.export_function("nodeName", node_name)?;
+    cx.export_function("nodeType", node_type)?;
     cx.export_function("outerHTML", outer_html)?;
+    cx.export_function("parentElement", parent_element)?;
+    cx.export_function("parentNode", parent_node)?;
+    cx.export_function("parse", parse)?;
+    cx.export_function("previousSibling", previous_sibling)?;
+    cx.export_function("publicId", node_public_id)?;
     cx.export_function("querySelector", query_selector)?;
     cx.export_function("querySelectorAll", query_selector_all)?;
-    cx.export_function("firstChild", first_child)?;
-    cx.export_function("lastChild", last_child)?;
-    cx.export_function("previousSibling", previous_sibling)?;
-    cx.export_function("nextSibling", next_sibling)?;
-    cx.export_function("parentNode", parent_node)?;
-    cx.export_function("textContent", text_content)?;
-    cx.export_function("nodeName", node_name)?;
-    cx.export_function("publicId", node_public_id)?;
+    cx.export_function("removeChild", remove_child)?;
     cx.export_function("systemId", node_system_id)?;
-    cx.export_function("nodeType", node_type)?;
-    cx.export_function("children", children)?;
-    cx.export_function("childNodes", child_nodes)?;
-    cx.export_function("isEqualNode", is_equal_node)?;
-    cx.export_function("hasChildNodes", has_child_nodes)?;
+    cx.export_function("textContent", text_content)?;
     Ok(())
 }
