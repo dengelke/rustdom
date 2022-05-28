@@ -1,22 +1,11 @@
 const { expect } = require('chai');
-const RustDOM = require('../');
+const RustDOM = require('..');
 
 const basicHtmlString = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"><html><head></head><body><p class="A">Foo</p><p id="Baz">Bar</p><!--' and '--></body></html>`;
 
 const equalityTestString = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"><html><head></head><body><p class="A">Foo</p><p id="Baz">Bar</p><p class="A">Foo</p></body></html>`;
 
 const DOMException = require('../lib/domexception');
-
-describe('serialize tests', () => {
-  it('should insert head and body tags', () => {
-    const document = new RustDOM("<!DOCTYPE html>Test");
-    expect(document.serialize()).to.equal('<!DOCTYPE html><html><head></head><body>Test</body></html>');
-  });
-  it('should not add DOCTYPE tag', () => {
-    const document = new RustDOM("Test");
-    expect(document.serialize()).to.equal('<html><head></head><body>Test</body></html>');
-  });
-});
 
 describe('basic', () => {
   const basicDocument = new RustDOM(basicHtmlString).document;
