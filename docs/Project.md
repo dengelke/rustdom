@@ -22,6 +22,8 @@
 - [x] Optimise return based on known nodeTypes
 - [x] Update to neon 0.10
 - [x] Support removeChild
+- [ ] Support normalize
+- [ ] Support isEqualNode
 - [ ] Support insertBefore
 - [ ] Update to html5ever 0.26.0
 - [ ] Return nodeName correctly for all types (to be tested)
@@ -40,6 +42,7 @@
 ## Optional
 - [ ] Graceful error handling throughout API
 - [ ] Investigate removing html5ever dependency
+- [ ] Using jest for testing
 - [ ] Load from url using node-fetch
 - [ ] Load from file using fs
 - [ ] Node.js Async API using JsPromise 
