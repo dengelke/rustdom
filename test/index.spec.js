@@ -16,6 +16,14 @@ describe('basic', () => {
     expect(basicDocument.nodeName).to.equal('#document');
     expect(basicDocument.nodeType).to.equal(9);
   });
+  it('return documentElement', () => {
+    const body = basicDocument.documentElement;
+    expect(body.textContent).to.equal('FooBar');
+    expect(body.nodeName).to.equal('HTML');
+    expect(body.nodeType).to.equal(1);
+    expect(body.innerHTML).to.equal(`<head></head><body><p class="A">Foo</p><p id="Baz">Bar</p><!--' and '--></body>`);
+    expect(body.outerHTML).to.equal(`<html><head></head><body><p class="A">Foo</p><p id="Baz">Bar</p><!--' and '--></body></html>`);
+  });
   it('return body', () => {
     const body = basicDocument.body;
     expect(body.textContent).to.equal('FooBar');

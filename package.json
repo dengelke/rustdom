@@ -1,6 +1,6 @@
 {
   "name": "rustdom",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Rust based DOM manipulation library for Node.js",
   "repository": {
     "type": "git",
@@ -28,8 +28,8 @@
     "build-release": "npm run build -- --release",
     "install": "npm run build-release",
     "test": "npx mocha test",
-    "watch-rs": "cargo watch --quiet -i index.js -i index.node -i test -i lib -- cargo-cp-artifact -nc index.node -- cargo build --message-format=json-render-diagnostics",
-    "watch-js": "cargo watch --quiet --no-gitignore --postpone -i src -w index.node -w index.js -w test -w lib -- npm run test",
-    "watch": "concurrently \"npm run watch-rs\" \"npm run watch-js\""
+    "watch-rs": "cargo watch --quiet -i index.js -i test -i lib -- cargo-cp-artifact -nc index.node -- cargo build --message-format=json-render-diagnostics",
+    "watch-js": "cargo watch --no-gitignore --postpone -i src -w index.node -w index.js -w test -w lib -- npm run test",
+    "watch": "concurrently \"npm:watch-*\""
   }
 }

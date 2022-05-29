@@ -353,7 +353,9 @@ class Document extends Element {
     // readonly attribute DOMString contentType;
   
     // readonly attribute DocumentType? doctype;
-    // readonly attribute Element? documentElement;
+    get documentElement() {
+        return this.querySelector('html');
+    }
     // HTMLCollection getElementsByTagName(DOMString qualifiedName);
     // HTMLCollection getElementsByTagNameNS(DOMString? namespace, DOMString localName);
     // HTMLCollection getElementsByClassName(DOMString classNames);
