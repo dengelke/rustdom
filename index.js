@@ -24,6 +24,7 @@ const {
     textContent, 
 } = require('./index.node');
 
+// TODO add ownerDocument and investigate need for localName in variable list
 function createNode (input) {
     // If no input return null
     if (!input) return null;
@@ -54,17 +55,18 @@ const DOMException = require('./lib/domexception');
 class Node {
     _data;
 
+    // TODO add ownerDocument and investigate need for localName in variable list
     constructor (data, nodeType) {
         this._data = data;
         this.nodeType = nodeType;
     }
 
-    static get ELEMENT_NODE() { return 1; }
+    get ELEMENT_NODE() { return 1; }
 
     // Not implemented
     // static get ATTRIBUTE_NODE() { return 2; }
 
-    static get TEXT_NODE() { return 3; }
+    get TEXT_NODE() { return 3; }
 
     // Not implemented
     // static get CDATA_SECTION_NODE() { return 4; }
@@ -75,15 +77,15 @@ class Node {
     // Not implemented (legacy)
     // static get ENTITY_NODE() { return 6; }
 
-    static get PROCESSING_INSTRUCTION_NODE() { return 7; }
+    get PROCESSING_INSTRUCTION_NODE() { return 7; }
 
-    static get COMMENT_NODE() { return 8; }
+    get COMMENT_NODE() { return 8; }
 
-    static get DOCUMENT_NODE() { return 9; }
+    get DOCUMENT_NODE() { return 9; }
 
-    static get DOCUMENT_TYPE_NODE() { return 10; }
+    get DOCUMENT_TYPE_NODE() { return 10; }
 
-    static get DOCUMENT_FRAGMENT_NODE() { return 11; }
+    get DOCUMENT_FRAGMENT_NODE() { return 11; }
 
     // Not implemented (legacy)
     // static get NOTATION_NODE() { return 12; }
@@ -197,12 +199,30 @@ class Node {
         return isSameNode(this._data, otherNode._data);
     }
   
-    // const unsigned short DOCUMENT_POSITION_DISCONNECTED = 0x01;
-    // const unsigned short DOCUMENT_POSITION_PRECEDING = 0x02;
-    // const unsigned short DOCUMENT_POSITION_FOLLOWING = 0x04;
-    // const unsigned short DOCUMENT_POSITION_CONTAINS = 0x08;
-    // const unsigned short DOCUMENT_POSITION_CONTAINED_BY = 0x10;
-    // const unsigned short DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0x20;
+    get DOCUMENT_POSITION_DISCONNECTED () { 
+        return 0x01;
+    }
+
+    get DOCUMENT_POSITION_PRECEDING () { 
+        return 0x02; 
+    }
+
+    get DOCUMENT_POSITION_FOLLOWING () { 
+        return 0x04; 
+    }
+
+    get DOCUMENT_POSITION_CONTAINS () { 
+        return 0x08; 
+    }
+
+    get DOCUMENT_POSITION_CONTAINED_BY () { 
+        return 0x10; 
+    }
+
+    get DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC () { 
+        return 0x20; 
+    }
+
     // unsigned short compareDocumentPosition(Node other);
     // boolean contains(Node? other);
   
@@ -299,7 +319,6 @@ class Element extends Node {
     // [CEReactions] Element? insertAdjacentElement(DOMString where, Element element); // legacy
     // undefined insertAdjacentText(DOMString where, DOMString data); // legacy
 
-    // Should be moved to element/mixin
     get children () {
         return children(this._data).map(data => new Element(data, 1));
     }
