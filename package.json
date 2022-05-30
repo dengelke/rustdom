@@ -15,6 +15,7 @@
   "author": "Daniel Engelke <dengelke91@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "c8": "^7.11.3",
     "chai": "^1.10.0",
     "concurrently": "^7.2.1",
     "mocha": "^10.0.0"
@@ -26,7 +27,9 @@
     "build": "cargo-cp-artifact -nc index.node -- cargo build --message-format=json-render-diagnostics",
     "build-debug": "npm run build --",
     "build-release": "npm run build -- --release",
+    "coverage": "c8 npm test",
     "install": "npm run build-release",
+    "report": "c8 -r html report",
     "test": "npx mocha test",
     "watch-rs": "cargo watch --quiet -i index.js -i test -i lib -- cargo-cp-artifact -nc index.node -- cargo build --message-format=json-render-diagnostics",
     "watch-js": "cargo watch --no-gitignore --postpone -i src -w index.node -w index.js -w test -w lib -- npm run test",
