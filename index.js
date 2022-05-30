@@ -250,9 +250,10 @@ class Node {
         }
     }
 
-    get nodeData () {
-        return nodeData(this._data);
-    }
+    // TODO implement
+    // get nodeData () {
+    //     return nodeData(this._data);
+    // }
 
     get outerHTML () {
         return outerHTML(this._data);
@@ -263,9 +264,9 @@ class Node {
     }
 
     // TODO meet implementation requirements https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent
-    get innerText () {
-        return textContent(this._data);
-    }
+    // get innerText () {
+    //     return textContent(this._data);
+    // }
 }
 
 class Element extends Node {
@@ -315,6 +316,36 @@ class Element extends Node {
     // HTMLCollection getElementsByTagName(DOMString qualifiedName);
     // HTMLCollection getElementsByTagNameNS(DOMString? namespace, DOMString localName);
     // HTMLCollection getElementsByClassName(DOMString classNames);
+
+    // Implementation to move to Rust
+    // getElementsByClassName(className) {
+    //     const elements = new NodeList;
+    //     let {[NEXT]: next, [END]: end} = this;
+    //     while (next !== end) {
+    //       if (
+    //         next.nodeType === ELEMENT_NODE &&
+    //         next.hasAttribute('class') &&
+    //         next.classList.has(className)
+    //       )
+    //         elements.push(next);
+    //       next = next[NEXT];
+    //     }
+    //     return elements;
+    //   }
+    
+    //   getElementsByTagName(tagName) {
+    //     const elements = new NodeList;
+    //     let {[NEXT]: next, [END]: end} = this;
+    //     while (next !== end) {
+    //       if (next.nodeType === ELEMENT_NODE && (
+    //         next.localName === tagName ||
+    //         localCase(next) === tagName
+    //       ))
+    //         elements.push(next);
+    //       next = next[NEXT];
+    //     }
+    //     return elements;
+    //   }
   
     // [CEReactions] Element? insertAdjacentElement(DOMString where, Element element); // legacy
     // undefined insertAdjacentText(DOMString where, DOMString data); // legacy
@@ -360,7 +391,7 @@ class Comment extends Node {
     // constructor(optional DOMString data = "");
 }
 
-class Document extends Element {
+class Document extends Node {
 
     // [SameObject] readonly attribute DOMImplementation implementation;
     // readonly attribute USVString URL;
@@ -410,6 +441,19 @@ class Document extends Element {
 
     get head() {
         return this.querySelector('head');;
+    }
+
+    get children () {
+        return children(this._data).map(data => new Element(data, 1));
+    }
+
+    querySelector (selector) {
+        const data = querySelector(this._data, selector);
+        return data ? new Element(data, 1) : null;
+    }
+
+    querySelectorAll (selector) {
+        return querySelectorAll(this._data, selector).map(data => new Element(data, 1));
     }
 }
 
