@@ -52,6 +52,41 @@ fn outer_html(mut cx: FunctionContext) -> JsResult<JsString> {
     Ok(cx.string(content))
 }
 
+fn get_attribute(mut cx: FunctionContext) -> JsResult<JsValue> {
+    let element = cx.argument::<BoxedNode>(0)?;
+    let attribute_name = cx.argument::<JsString>(1)?;
+    let result = element.borrow().get_attribute(attribute_name.value(&mut cx));
+    match result {
+        Ok(result) => Ok(cx.string(result).upcast()),
+        Err(_err) => Ok(cx.null().upcast())
+    }
+}
+
+fn get_elements_by_tag_name(mut cx: FunctionContext) -> JsResult<JsValue> {
+    let dom = cx.argument::<BoxedNode>(0)?;
+    let class_name = cx.argument::<JsString>(1)?;
+    let result = dom.borrow().get_elements_by_tag_name(class_name.value(&mut cx));
+    let result_array = JsArray::new(&mut cx, 0);
+    match result {
+        Ok(result_vec) => {
+            for node in result_vec {
+                let len = result_array.len(&mut cx);
+                let boxed = cx.boxed(RefCell::new(node));
+                result_array.set(&mut cx, len, boxed)?;
+            }
+            Ok(result_array.upcast())
+        },
+        Err(_err) => Ok(cx.null().upcast())
+    }
+}
+
+fn has_attribute(mut cx: FunctionContext) -> JsResult<JsBoolean> {
+    let element = cx.argument::<BoxedNode>(0)?;
+    let attribute_name = cx.argument::<JsString>(1)?;
+    let result = element.borrow().has_attribute(attribute_name.value(&mut cx));
+    Ok(cx.boolean(result))
+}
+
 fn query_selector(mut cx: FunctionContext) -> JsResult<JsValue> {
     let dom = cx.argument::<BoxedNode>(0)?;
     let selector = cx.argument::<JsString>(1)?;
@@ -77,13 +112,42 @@ fn query_selector_all(mut cx: FunctionContext) -> JsResult<JsArray> {
     Ok(result_array)
 }
 
+fn remove(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+    let element = cx.argument::<BoxedNode>(0)?;
+    element.borrow_mut().detach();
+    Ok(cx.undefined())
+}
+
+fn remove_attribute(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+    let element = cx.argument::<BoxedNode>(0)?;
+    let attribute_name = cx.argument::<JsString>(1)?;
+    element.borrow().remove_attribute(attribute_name.value(&mut cx));
+
+    Ok(cx.undefined())
+}
+
+// TODO look at cleaning up using Entry API
+fn set_attribute(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+    let element = cx.argument::<BoxedNode>(0)?;
+    let attribute_name = cx.argument::<JsString>(1)?;
+    let attribute_value = cx.argument::<JsString>(2)?;
+    if element.borrow().has_attribute(attribute_name.value(&mut cx)) {
+        element.borrow().set_attribute(attribute_name.value(&mut cx), attribute_value.value(&mut cx));
+    } else {
+        element.borrow().insert_attribute(attribute_name.value(&mut cx), attribute_value.value(&mut cx));
+    }
+
+    Ok(cx.undefined())
+}
+
 fn clone_node(mut cx: FunctionContext) -> JsResult<JsValue> {
     let node = cx.argument::<BoxedNode>(0)?;
     // TODO add deep clone functionality
-    // let deep = cx.argument::<JsBoolean>(1)?;
-    let cloned_node = node.borrow_mut().shallow_clone();
+    let deep = cx.argument::<JsBoolean>(1)?;
+    let cloned_node = node.borrow_mut().clone(deep.value(&mut cx));
     let node_type = cloned_node.node_type();
     to_object(cloned_node, node_type, cx)
+
 }
 
 fn create_text_node(mut cx: FunctionContext) -> JsResult<BoxedNode> {
@@ -267,6 +331,9 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
     cx.export_function("cloneNode", clone_node)?;
     cx.export_function("createTextNode", create_text_node)?;
     cx.export_function("firstChild", first_child)?;
+    cx.export_function("getAttribute", get_attribute)?;
+    cx.export_function("getElementsByTagName", get_elements_by_tag_name)?;
+    cx.export_function("hasAttribute", has_attribute)?;
     cx.export_function("hasChildNodes", has_child_nodes)?;
     cx.export_function("innerHTML", inner_html)?;
     cx.export_function("isSameNode", is_same_node)?;
@@ -282,7 +349,10 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
     cx.export_function("publicId", node_public_id)?;
     cx.export_function("querySelector", query_selector)?;
     cx.export_function("querySelectorAll", query_selector_all)?;
+    cx.export_function("remove", remove)?;
+    cx.export_function("removeAttribute", remove_attribute)?;
     cx.export_function("removeChild", remove_child)?;
+    cx.export_function("setAttribute", set_attribute)?;
     cx.export_function("systemId", node_system_id)?;
     cx.export_function("textContent", text_content)?;
     Ok(())

@@ -97,12 +97,18 @@ describe('list', () => {
   it('return children', () => {
     expect(basicDocument.body.children[0].nodeName).to.equal('P');
   });
+  it('return getElementsByTagName', () => {
+    const results = basicDocument.body.getElementsByTagName('P');
+    expect(results.length).to.equal(2);
+    expect(results[0].outerHTML).to.equal('<p class="A">Foo</p>');
+    expect(results[1].outerHTML).to.equal('<p id="Baz">Bar</p>');
+  });
   it('return childNodes', () => {
     expect(basicDocument.childNodes[0].nodeName).to.equal('html');
     expect(basicDocument.body.childNodes[2].nodeName).to.equal('#comment');
   });
   it('return empty on children', () => {
-    expect(basicDocument.querySelector('p').children).to.deep.equal([]);
+    expect(basicDocument.querySelector('P').children).to.deep.equal([]);
   });
   it('queryAll', () => {
     const nodeList = basicDocument.body.querySelectorAll('p');
@@ -155,8 +161,8 @@ describe('create node', () => {
 });
 
 describe('clone node', () => {
-  const basicDocument = new RustDOM(basicHtmlString).document;
   it('should shallow clone and append', () => {
+    const basicDocument = new RustDOM(basicHtmlString).document;
     expect(basicDocument.body.children.length).to.equal(2);
     const clonedNode = basicDocument.body.children[1].cloneNode(false);
     expect(clonedNode.nodeType).to.equal(1);
@@ -165,16 +171,27 @@ describe('clone node', () => {
     expect(basicDocument.body.children.length).to.equal(3);
     expect(basicDocument.body.children[2].textContent).to.equal("");
   });
-  // TODO
-  // it('should deep clone and append', () => {
-  //   expect(basicDocument.body.children.length).to.equal(2);
-  //   const clonedNode = basicDocument.body.children[1].cloneNode(false);
-  //   expect(clonedNode.nodeType).to.equal(1);
-  //   expect(clonedNode.textContent).to.equal("Foo");
-  //   basicDocument.body.appendChild(clonedNode);
-  //   expect(basicDocument.body.children.length).to.equal(3);
-  //   expect(basicDocument.body.children[2].textContent).to.equal("");
-  // });
+  it('should deep clone and append', () => {
+    const basicDocument = new RustDOM(basicHtmlString).document;
+    expect(basicDocument.body.children.length).to.equal(2);
+    const clonedNode = basicDocument.body.cloneNode(true);
+    expect(clonedNode.outerHTML).to.equal('<body><p class="A">Foo</p><p id="Baz">Bar</p><!--\' and \'--></body>');
+    expect(clonedNode.nodeType).to.equal(1);
+    expect(clonedNode.textContent).to.equal("FooBar");
+    basicDocument.body.appendChild(clonedNode);
+    expect(basicDocument.body.children.length).to.equal(3);
+    expect(basicDocument.body.children[2].textContent).to.equal("FooBar");
+  });
+});
+
+describe('remove', () => {
+  const basicDocument = new RustDOM(basicHtmlString).document;
+  it('should remove element', () => {
+    expect(basicDocument.querySelector('#Baz').textContent).to.equal("Bar");
+    expect(basicDocument.body.children[1].remove());
+    expect(basicDocument.body.children.length).to.equal(1);
+    expect(basicDocument.querySelector('#Baz')).to.equal(null);
+  });
 });
 
 describe('remove child', () => {
