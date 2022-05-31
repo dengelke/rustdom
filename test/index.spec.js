@@ -161,8 +161,8 @@ describe('create node', () => {
 });
 
 describe('clone node', () => {
-  const basicDocument = new RustDOM(basicHtmlString).document;
   it('should shallow clone and append', () => {
+    const basicDocument = new RustDOM(basicHtmlString).document;
     expect(basicDocument.body.children.length).to.equal(2);
     const clonedNode = basicDocument.body.children[1].cloneNode(false);
     expect(clonedNode.nodeType).to.equal(1);
@@ -171,16 +171,17 @@ describe('clone node', () => {
     expect(basicDocument.body.children.length).to.equal(3);
     expect(basicDocument.body.children[2].textContent).to.equal("");
   });
-  // TODO
-  // it('should deep clone and append', () => {
-  //   expect(basicDocument.body.children.length).to.equal(2);
-  //   const clonedNode = basicDocument.body.children[1].cloneNode(false);
-  //   expect(clonedNode.nodeType).to.equal(1);
-  //   expect(clonedNode.textContent).to.equal("Foo");
-  //   basicDocument.body.appendChild(clonedNode);
-  //   expect(basicDocument.body.children.length).to.equal(3);
-  //   expect(basicDocument.body.children[2].textContent).to.equal("");
-  // });
+  it('should deep clone and append', () => {
+    const basicDocument = new RustDOM(basicHtmlString).document;
+    expect(basicDocument.body.children.length).to.equal(2);
+    const clonedNode = basicDocument.body.cloneNode(true);
+    expect(clonedNode.outerHTML).to.equal('<body><p class="A">Foo</p><p id="Baz">Bar</p><!--\' and \'--></body>');
+    expect(clonedNode.nodeType).to.equal(1);
+    expect(clonedNode.textContent).to.equal("FooBar");
+    basicDocument.body.appendChild(clonedNode);
+    expect(basicDocument.body.children.length).to.equal(3);
+    expect(basicDocument.body.children[2].textContent).to.equal("FooBar");
+  });
 });
 
 describe('remove', () => {

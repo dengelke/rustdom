@@ -33,10 +33,18 @@ impl NodeSend {
     }
 
     // TODO Fix since that deep has no effect on empty elements, such as the <img> and <input> elements.
-    pub fn shallow_clone(&self) -> Self {
+    pub fn clone(&self, deep: bool) -> Self {
         let data = self.node.data().to_owned();
         let node = NodeRef::new(data);
-        NodeSend { node }
+        let mut node_send = NodeSend { node };
+        if deep {
+            for node in self.node.children() {
+                let node_send_loop = NodeSend { node };
+                let cloned_node = node_send_loop.clone(deep);
+                node_send.append_child(&cloned_node);
+            }
+        }
+        return node_send
     }
 
     pub fn eq(&self, node: &NodeSend) -> bool {

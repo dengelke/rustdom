@@ -143,11 +143,11 @@ fn set_attribute(mut cx: FunctionContext) -> JsResult<JsUndefined> {
 fn clone_node(mut cx: FunctionContext) -> JsResult<JsValue> {
     let node = cx.argument::<BoxedNode>(0)?;
     // TODO add deep clone functionality
-    // let deep = cx.argument::<JsBoolean>(1)?;
-    let cloned_node = node.borrow_mut().shallow_clone();
-    // let cloned_node = node.borrow_mut().clone(deep.value(&mut cx));
+    let deep = cx.argument::<JsBoolean>(1)?;
+    let cloned_node = node.borrow_mut().clone(deep.value(&mut cx));
     let node_type = cloned_node.node_type();
     to_object(cloned_node, node_type, cx)
+
 }
 
 fn create_text_node(mut cx: FunctionContext) -> JsResult<BoxedNode> {
