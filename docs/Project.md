@@ -23,6 +23,8 @@
 - [x] Update to neon 0.10
 - [x] Support removeChild
 - [x] Support remove
+- [x] Support cloneNode
+- [ ] Update DOM properties
 - [ ] Live lists
 - [ ] Support normalize
 - [ ] Support isEqualNode
@@ -30,7 +32,6 @@
 - [ ] Update to html5ever 0.26.0
 - [ ] Return nodeName correctly for all types (to be tested)
 - [ ] Support window in node.js
-- [ ] Update DOM properties
 - [ ] Add additional nodes to dom tree
 - [ ] Return DOM parsing errors
 - [ ] Support iteration over lists
