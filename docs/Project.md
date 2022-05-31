@@ -22,6 +22,8 @@
 - [x] Optimise return based on known nodeTypes
 - [x] Update to neon 0.10
 - [x] Support removeChild
+- [x] Support remove
+- [ ] Live lists
 - [ ] Support normalize
 - [ ] Support isEqualNode
 - [ ] Support insertBefore

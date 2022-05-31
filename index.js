@@ -5,6 +5,9 @@ const {
     cloneNode,
     createTextNode, 
     firstChild, 
+    getAttribute,
+    getElementsByTagName,
+    hasAttribute,
     hasChildNodes, 
     innerHTML, 
     isSameNode,
@@ -19,7 +22,10 @@ const {
     publicId, 
     querySelector,
     querySelectorAll, 
+    remove,
+    removeAttribute,
     removeChild,
+    setAttribute,
     systemId, 
     textContent, 
 } = require('./index.node');
@@ -122,6 +128,7 @@ class Node {
         return hasChildNodes(this._data);
     }
 
+    // TODO make live list
     get childNodes () {
         return childNodes(this._data).map(data => createNode(data));
     }
@@ -283,21 +290,49 @@ class Element extends Node {
     }
   
     // [CEReactions] attribute DOMString id;
+    get id() { 
+        return this.getAttribute('id'); 
+    }
+
+    set id(value) {
+        return this.setAttribute('id', value); 
+    }
+
     // [CEReactions] attribute DOMString className;
+    get className() { 
+        return this.getAttribute('class'); 
+    }
+
+    set className(value) {
+        return this.setAttribute('class', value); 
+    }
     // [SameObject, PutForwards=value] readonly attribute DOMTokenList classList;
     // [CEReactions, Unscopable] attribute DOMString slot;
   
     // boolean hasAttributes();
     // [SameObject] readonly attribute NamedNodeMap attributes;
     // sequence<DOMString> getAttributeNames();
-    // DOMString? getAttribute(DOMString qualifiedName);
+
+    // TODO error and null input handling
+    getAttribute(qualifiedName) {
+        return getAttribute(this._data, qualifiedName);
+    }
+
     // DOMString? getAttributeNS(DOMString? namespace, DOMString localName);
     // [CEReactions] undefined setAttribute(DOMString qualifiedName, DOMString value);
+    setAttribute(qualifiedName, value) {
+        return setAttribute(this._data, qualifiedName, value);
+    }
     // [CEReactions] undefined setAttributeNS(DOMString? namespace, DOMString qualifiedName, DOMString value);
-    // [CEReactions] undefined removeAttribute(DOMString qualifiedName);
+    removeAttribute(qualifiedName) {
+        return removeAttribute(this._data, qualifiedName);
+    }
     // [CEReactions] undefined removeAttributeNS(DOMString? namespace, DOMString localName);
     // [CEReactions] boolean toggleAttribute(DOMString qualifiedName, optional boolean force);
     // boolean hasAttribute(DOMString qualifiedName);
+    hasAttribute(qualifiedName) {
+        return hasAttribute(this._data, qualifiedName);
+    }
     // boolean hasAttributeNS(DOMString? namespace, DOMString localName);
   
     // Attr? getAttributeNode(DOMString qualifiedName);
@@ -314,8 +349,14 @@ class Element extends Node {
     // boolean webkitMatchesSelector(DOMString selectors); // legacy alias of .matches
   
     // HTMLCollection getElementsByTagName(DOMString qualifiedName);
+    getElementsByTagName(qualifiedName) {
+        return getElementsByTagName(this._data, qualifiedName).map(data => new Element(data, 1));
+    }
     // HTMLCollection getElementsByTagNameNS(DOMString? namespace, DOMString localName);
     // HTMLCollection getElementsByClassName(DOMString classNames);
+    // getElementsByClassName(className) {
+    //     return getElementsByClassName(this._data, className).map(data => new Element(data, 1));
+    // }
 
     // Implementation to move to Rust
     // getElementsByClassName(className) {
@@ -350,6 +391,7 @@ class Element extends Node {
     // [CEReactions] Element? insertAdjacentElement(DOMString where, Element element); // legacy
     // undefined insertAdjacentText(DOMString where, DOMString data); // legacy
 
+    // TODO make live list
     get children () {
         return children(this._data).map(data => new Element(data, 1));
     }
@@ -361,6 +403,11 @@ class Element extends Node {
 
     querySelectorAll (selector) {
         return querySelectorAll(this._data, selector).map(data => new Element(data, 1));
+    }
+
+    // TODO add to child node mixin https://dom.spec.whatwg.org/#childnode
+    remove() {
+        return remove(this._data);
     }
 }
 

@@ -1,5 +1,5 @@
-use html5ever::serialize::{SerializeOpts};
 use html5ever::serialize::TraversalScope::*;
+use html5ever::serialize::{SerializeOpts};
 use html5ever::tree_builder::TreeBuilderOpts;
 
 use kuchiki::iter::{Descendants, Elements, Select, Siblings};
@@ -105,10 +105,47 @@ impl NodeSend {
         Ok(result)
     }
 
+    pub fn get_attribute(&self, attribute: String) -> Result<String, ()> {
+        match self.node.as_element().to_owned().unwrap().attributes.borrow().get(attribute) {
+            Some(result) => Ok(result.to_owned()),
+            None => Err(()),
+        }
+    }
+
+    // TODO use selector methods
+    pub fn get_elements_by_tag_name(&self, tag: String) -> Result<Vec<NodeSend>, ()> {
+        let result = self.node.descendants()
+        .filter(|element| {
+            element.as_element().map_or(false, |e| {
+                // Since name.local is lowercase, make sure tag matches
+                e.name.local.as_ref() == tag.to_lowercase()
+            })
+        })
+        .map(|node| {
+            NodeSend { node: node.to_owned() }
+        })
+        .collect();
+        Ok(result)
+    }
+
     pub fn first_child(&self) -> Result<NodeSend, ()> {
         match self.node.first_child() {
             Some(node) => Ok(NodeSend { node }),
             None => Err(())
+        }
+    }
+
+    pub fn has_attribute(&self, attribute: String) -> bool {
+        match self.node.as_element().to_owned().unwrap().attributes.borrow().get(attribute) {
+            Some(..) => true,
+            None => false,
+        }
+    }
+
+    pub fn insert_attribute(&self, attribute: String, value: String) -> () {
+        match self.node.as_element().to_owned().unwrap().attributes.borrow_mut().insert(attribute, value) {
+            Some(..) => (),
+            None => ()
         }
     }
 
@@ -137,6 +174,22 @@ impl NodeSend {
         match self.node.parent() {
             Some(node) => Ok(NodeSend { node }),
             None => Err(())
+        }
+    }
+
+    pub fn remove_attribute(&self, attribute: String) -> () {
+        match self.node.as_element().to_owned().unwrap().attributes.borrow_mut().remove(attribute) {
+            Some(..) => (),
+            None => ()
+        }
+    }
+
+    pub fn set_attribute(&self, attribute: String, value: String) -> () {
+        match self.node.as_element().to_owned().unwrap().attributes.borrow_mut().get_mut(attribute) {
+            Some(att) => {
+                *att = value;
+            },
+            None => ()
         }
     }
 
