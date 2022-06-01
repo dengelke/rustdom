@@ -47,6 +47,32 @@ impl NodeSend {
         return node_send
     }
 
+    pub fn normalize(&self) -> () {
+        for node in self.child_nodes() {
+            // If text node
+            if let Some(text_node) = node.as_text() {
+                // If 0 length delete node
+                if text_node.borrow().len() == 0 {
+                    node.detach();
+                }
+                // With sibling
+                while let Some(next_sibling) = node.next_sibling() {
+                    // That is a text node
+                    if let Some(next_text) = next_sibling.as_text() {
+                        // Append to text node
+                        text_node.borrow_mut().push_str(&next_text.borrow());
+                        // Remove next sibling
+                        next_sibling.detach();
+                    }
+                }
+            } else {
+                let node_send = NodeSend { node };
+                node_send.normalize();
+            }
+        }
+        return
+    }
+
     pub fn eq(&self, node: &NodeSend) -> bool {
         self.node.eq(&node.node)
     }

@@ -24,12 +24,12 @@
 - [x] Support removeChild
 - [x] Support remove
 - [x] Support cloneNode
+- [x] Support normalize
+- [ ] Handle ownerDocument
 - [ ] Update DOM properties
 - [ ] Live lists
-- [ ] Support normalize
 - [ ] Support isEqualNode
 - [ ] Support insertBefore
-- [ ] Update to html5ever 0.26.0
 - [ ] Return nodeName correctly for all types (to be tested)
 - [ ] Support window in node.js
 - [ ] Add additional nodes to dom tree
@@ -39,6 +39,9 @@
 - [ ] Implement ts-mixin
 - [ ] Provide detailed API docs
 - [ ] Implement rwlock or other thread safety mechanism
+- [ ] Shadow Root support
+- [ ] Event listeners
+- [ ] Mutation observers
 - [ ] Performance benchmarking
 - [ ] Write blog article
 

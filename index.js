@@ -14,6 +14,7 @@ const {
     lastChild, 
     nextSibling, 
     nodeName, 
+    normalize,
     outerHTML, 
     parentElement,
     parentNode, 
@@ -160,6 +161,9 @@ class Node {
     }
 
     // [CEReactions] undefined normalize();
+    normalize () {
+        return normalize(this._data);
+    }
 
     // TODO fix
     // [CEReactions, NewObject] Node cloneNode(optional boolean deep = false);

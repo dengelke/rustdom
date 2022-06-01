@@ -1,7 +1,9 @@
 const { expect } = require('chai');
+const fs = require('fs');
+const path = require('path');
 const RustDOM = require('..');
 
-const basicHtmlString = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"><html><head></head><body><p class="A">Foo</p><p id="Baz">Bar</p><!--' and '--></body></html>`;
+const basicHtmlString = fs.readFileSync(path.resolve(__dirname, './html/basic.html'), 'utf8');
 
 describe('attribute', () => {
     it('should have attribute', () => {

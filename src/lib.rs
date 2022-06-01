@@ -147,7 +147,12 @@ fn clone_node(mut cx: FunctionContext) -> JsResult<JsValue> {
     let cloned_node = node.borrow_mut().clone(deep.value(&mut cx));
     let node_type = cloned_node.node_type();
     to_object(cloned_node, node_type, cx)
+}
 
+fn normalize(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+    let node = cx.argument::<BoxedNode>(0)?;
+    node.borrow_mut().normalize();
+    Ok(cx.undefined())
 }
 
 fn create_text_node(mut cx: FunctionContext) -> JsResult<BoxedNode> {
@@ -341,6 +346,7 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
     cx.export_function("nextSibling", next_sibling)?;
     cx.export_function("nodeName", node_name)?;
     cx.export_function("nodeType", node_type)?;
+    cx.export_function("normalize", normalize)?;
     cx.export_function("outerHTML", outer_html)?;
     cx.export_function("parentElement", parent_element)?;
     cx.export_function("parentNode", parent_node)?;
