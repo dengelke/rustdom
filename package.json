@@ -1,6 +1,6 @@
 {
   "name": "rustdom",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Rust based DOM manipulation library for Node.js",
   "repository": {
     "type": "git",
