@@ -63,9 +63,14 @@ impl NodeSend {
                         text_node.borrow_mut().push_str(&next_text.borrow());
                         // Remove next sibling
                         next_sibling.detach();
+                    } else {
+                        // TODO add test for break
+                        // If not text node break loop
+                        break;
                     }
                 }
             } else {
+                // If not text node iterate
                 let node_send = NodeSend { node };
                 node_send.normalize();
             }
