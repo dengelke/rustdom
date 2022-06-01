@@ -1,7 +1,9 @@
 const { expect } = require('chai');
+const fs = require('fs');
+const path = require('path');
 const RustDOM = require('..');
 
-const basicHtmlString = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"><html><head></head><body><p class="A">Foo</p><p id="Baz">Bar</p><!--' and '--></body></html>`;
+const basicHtmlString = fs.readFileSync(path.resolve(__dirname, './html/basic.html'), 'utf8');
 
 const equalityTestString = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"><html><head></head><body><p class="A">Foo</p><p id="Baz">Bar</p><p class="A">Foo</p></body></html>`;
 
@@ -223,5 +225,22 @@ describe('is same node', () => {
   });
   it('should be false if different nodes', () => {
     expect(basicDocument.body.children[0].isSameNode(basicDocument.body.children[2])).to.equal(false);
+  });
+})
+
+describe('normalize', () => {
+  const basicDocument = new RustDOM(basicHtmlString).document;
+  basicDocument.body.children[0].appendChild( basicDocument.createTextNode("Part A ") );
+  basicDocument.body.children[0].appendChild( basicDocument.createTextNode("Part B ") );
+  basicDocument.body.appendChild( basicDocument.createTextNode("") );
+  basicDocument.body.appendChild( basicDocument.createTextNode("Part 1 ") );
+  basicDocument.body.appendChild( basicDocument.createTextNode("Part 2 ") );
+  basicDocument.body.appendChild( basicDocument.createTextNode("Part 3 ") );
+  it('normalize', () => {
+    expect(basicDocument.body.childNodes.length).to.equal(7);
+    expect(basicDocument.body.normalize()).to.equal(undefined);
+    expect(basicDocument.body.childNodes[3].textContent).to.equal('Part 1 Part 2 Part 3 ');
+    expect(basicDocument.body.childNodes.length).to.equal(4);
+    expect(basicDocument.body.children[0].textContent).to.equal('FooPart A Part B ');
   });
 })
